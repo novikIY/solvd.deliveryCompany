@@ -1,5 +1,6 @@
-package com.solvd.deliverycompany.dao;
+package com.solvd.deliverycompany.dao.mysqlimpl;
 
+import com.solvd.deliverycompany.dao.IPackageDAO;
 import com.solvd.deliverycompany.model.Order;
 import com.solvd.deliverycompany.model.Package;
 import com.solvd.deliverycompany.model.Warehouse;
@@ -13,18 +14,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PackageDAOImpl extends AbstractDAO<Package> implements IPackageDAO {
+public class PackageDAO extends AbstractMySQLDAO implements IPackageDAO {
 
-    private static final Logger LOGGER = LogManager.getLogger(PackageDAOImpl.class);
-
-    public PackageDAOImpl(Connection connection) {
-        super(connection);
-    }
+    private static final Logger LOGGER = LogManager.getLogger(PackageDAO.class);
 
     @Override
     public void create(Package p) {
         String sql = "INSERT INTO packages (order_id, warehouse_id, weight, dimensions, tracking_number, created_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -40,12 +39,18 @@ public class PackageDAOImpl extends AbstractDAO<Package> implements IPackageDAO 
         } catch (SQLException e) {
             LOGGER.error("Error creating package", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public Package getById(Long id) {
         String sql = "SELECT id, order_id, warehouse_id, weight, dimensions, tracking_number, created_at " +
                 "FROM packages WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -54,29 +59,16 @@ public class PackageDAOImpl extends AbstractDAO<Package> implements IPackageDAO 
             try (ResultSet rs = stm.executeQuery()) {
 
                 if (rs.next()) {
-
-                    Package p = new Package();
-                    p.setId(rs.getLong("id"));
-
-                    Order o = new Order();
-                    o.setId(rs.getLong("order_id"));
-                    p.setOrder(o);
-
-                    Warehouse w = new Warehouse();
-                    w.setId(rs.getLong("warehouse_id"));
-                    p.setWarehouse(w);
-
-                    p.setWeight(rs.getDouble("weight"));
-                    p.setDimensions(rs.getString("dimensions"));
-                    p.setTrackingNumber(rs.getString("tracking_number"));
-                    p.setCreatedAt(rs.getString("created_at"));
-
-                    return p;
+                    return mapResultSetToPackage(rs);
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting package by id {}", id, e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return null;
@@ -88,32 +80,21 @@ public class PackageDAOImpl extends AbstractDAO<Package> implements IPackageDAO 
 
         List<Package> list = new ArrayList<>();
 
+        Connection connection = getConnection();
+
         try (PreparedStatement stm = connection.prepareStatement(sql);
              ResultSet rs = stm.executeQuery()) {
 
             while (rs.next()) {
-
-                Package p = new Package();
-                p.setId(rs.getLong("id"));
-
-                Order o = new Order();
-                o.setId(rs.getLong("order_id"));
-                p.setOrder(o);
-
-                Warehouse w = new Warehouse();
-                w.setId(rs.getLong("warehouse_id"));
-                p.setWarehouse(w);
-
-                p.setWeight(rs.getDouble("weight"));
-                p.setDimensions(rs.getString("dimensions"));
-                p.setTrackingNumber(rs.getString("tracking_number"));
-                p.setCreatedAt(rs.getString("created_at"));
-
-                list.add(p);
+                list.add(mapResultSetToPackage(rs));
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting all packages", e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return list;
@@ -123,6 +104,8 @@ public class PackageDAOImpl extends AbstractDAO<Package> implements IPackageDAO 
     public void update(Package p) {
         String sql = "UPDATE packages SET order_id=?, warehouse_id=?, weight=?, dimensions=?, tracking_number=?, created_at=? " +
                 "WHERE id=?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -139,11 +122,17 @@ public class PackageDAOImpl extends AbstractDAO<Package> implements IPackageDAO 
         } catch (SQLException e) {
             LOGGER.error("Error updating package", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public void delete(Long id) {
         String sql = "DELETE FROM packages WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -152,6 +141,10 @@ public class PackageDAOImpl extends AbstractDAO<Package> implements IPackageDAO 
 
         } catch (SQLException e) {
             LOGGER.error("Error deleting package with id {}", id, e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
     }
 
@@ -162,6 +155,8 @@ public class PackageDAOImpl extends AbstractDAO<Package> implements IPackageDAO 
 
         List<Package> list = new ArrayList<>();
 
+        Connection connection = getConnection();
+
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
             stm.setLong(1, orderId);
@@ -169,29 +164,16 @@ public class PackageDAOImpl extends AbstractDAO<Package> implements IPackageDAO 
             try (ResultSet rs = stm.executeQuery()) {
 
                 while (rs.next()) {
-
-                    Package p = new Package();
-                    p.setId(rs.getLong("id"));
-
-                    Order o = new Order();
-                    o.setId(rs.getLong("order_id"));
-                    p.setOrder(o);
-
-                    Warehouse w = new Warehouse();
-                    w.setId(rs.getLong("warehouse_id"));
-                    p.setWarehouse(w);
-
-                    p.setWeight(rs.getDouble("weight"));
-                    p.setDimensions(rs.getString("dimensions"));
-                    p.setTrackingNumber(rs.getString("tracking_number"));
-                    p.setCreatedAt(rs.getString("created_at"));
-
-                    list.add(p);
+                    list.add(mapResultSetToPackage(rs));
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting packages by orderId {}", orderId, e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return list;
@@ -204,6 +186,8 @@ public class PackageDAOImpl extends AbstractDAO<Package> implements IPackageDAO 
 
         List<Package> list = new ArrayList<>();
 
+        Connection connection = getConnection();
+
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
             stm.setLong(1, warehouseId);
@@ -211,24 +195,7 @@ public class PackageDAOImpl extends AbstractDAO<Package> implements IPackageDAO 
             try (ResultSet rs = stm.executeQuery()) {
 
                 while (rs.next()) {
-
-                    Package p = new Package();
-                    p.setId(rs.getLong("id"));
-
-                    Order o = new Order();
-                    o.setId(rs.getLong("order_id"));
-                    p.setOrder(o);
-
-                    Warehouse w = new Warehouse();
-                    w.setId(rs.getLong("warehouse_id"));
-                    p.setWarehouse(w);
-
-                    p.setWeight(rs.getDouble("weight"));
-                    p.setDimensions(rs.getString("dimensions"));
-                    p.setTrackingNumber(rs.getString("tracking_number"));
-                    p.setCreatedAt(rs.getString("created_at"));
-
-                    list.add(p);
+                    list.add(mapResultSetToPackage(rs));
                 }
             }
 
@@ -236,6 +203,31 @@ public class PackageDAOImpl extends AbstractDAO<Package> implements IPackageDAO 
             LOGGER.error("Error getting packages by warehouseId {}", warehouseId, e);
         }
 
+        finally {
+            releaseConnection(connection);
+        }
+
         return list;
+    }
+
+    private Package mapResultSetToPackage(ResultSet rs) throws SQLException {
+        Package p = new Package();
+
+        p.setId(rs.getLong("id"));
+
+        Order o = new Order();
+        o.setId(rs.getLong("order_id"));
+        p.setOrder(o);
+
+        Warehouse w = new Warehouse();
+        w.setId(rs.getLong("warehouse_id"));
+        p.setWarehouse(w);
+
+        p.setWeight(rs.getDouble("weight"));
+        p.setDimensions(rs.getString("dimensions"));
+        p.setTrackingNumber(rs.getString("tracking_number"));
+        p.setCreatedAt(rs.getString("created_at"));
+
+        return p;
     }
 }

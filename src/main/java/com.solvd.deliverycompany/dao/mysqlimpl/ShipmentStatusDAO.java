@@ -1,5 +1,6 @@
-package com.solvd.deliverycompany.dao;
+package com.solvd.deliverycompany.dao.mysqlimpl;
 
+import com.solvd.deliverycompany.dao.IShipmentStatusDAO;
 import com.solvd.deliverycompany.model.ShipmentStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,17 +12,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShipmentStatusDAOImpl extends AbstractDAO<ShipmentStatus> implements IShipmentStatusDAO {
+public class ShipmentStatusDAO extends AbstractMySQLDAO implements IShipmentStatusDAO {
 
-    private static final Logger LOGGER = LogManager.getLogger(ShipmentStatusDAOImpl.class);
-
-    public ShipmentStatusDAOImpl(Connection connection) {
-        super(connection);
-    }
+    private static final Logger LOGGER = LogManager.getLogger(ShipmentStatusDAO.class);
 
     @Override
     public void create(ShipmentStatus status) {
         String sql = "INSERT INTO shipment_statuses (status_name, description) VALUES (?, ?)";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -33,11 +32,17 @@ public class ShipmentStatusDAOImpl extends AbstractDAO<ShipmentStatus> implement
         } catch (SQLException e) {
             LOGGER.error("Error creating shipment status", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public ShipmentStatus getById(Long id) {
         String sql = "SELECT id, status_name, description FROM shipment_statuses WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -46,18 +51,16 @@ public class ShipmentStatusDAOImpl extends AbstractDAO<ShipmentStatus> implement
             try (ResultSet rs = stm.executeQuery()) {
 
                 if (rs.next()) {
-
-                    ShipmentStatus s = new ShipmentStatus();
-                    s.setId(rs.getLong("id"));
-                    s.setStatusName(rs.getString("status_name"));
-                    s.setDescription(rs.getString("description"));
-
-                    return s;
+                    return mapResultSetToShipmentStatus(rs);
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting shipment status by id {}", id, e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return null;
@@ -69,21 +72,21 @@ public class ShipmentStatusDAOImpl extends AbstractDAO<ShipmentStatus> implement
 
         List<ShipmentStatus> list = new ArrayList<>();
 
+        Connection connection = getConnection();
+
         try (PreparedStatement stm = connection.prepareStatement(sql);
              ResultSet rs = stm.executeQuery()) {
 
             while (rs.next()) {
-
-                ShipmentStatus s = new ShipmentStatus();
-                s.setId(rs.getLong("id"));
-                s.setStatusName(rs.getString("status_name"));
-                s.setDescription(rs.getString("description"));
-
-                list.add(s);
+                list.add(mapResultSetToShipmentStatus(rs));
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting all shipment statuses", e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return list;
@@ -92,6 +95,8 @@ public class ShipmentStatusDAOImpl extends AbstractDAO<ShipmentStatus> implement
     @Override
     public void update(ShipmentStatus status) {
         String sql = "UPDATE shipment_statuses SET status_name=?, description=? WHERE id=?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -104,11 +109,17 @@ public class ShipmentStatusDAOImpl extends AbstractDAO<ShipmentStatus> implement
         } catch (SQLException e) {
             LOGGER.error("Error updating shipment status", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public void delete(Long id) {
         String sql = "DELETE FROM shipment_statuses WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -118,11 +129,17 @@ public class ShipmentStatusDAOImpl extends AbstractDAO<ShipmentStatus> implement
         } catch (SQLException e) {
             LOGGER.error("Error deleting shipment status with id {}", id, e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public ShipmentStatus getByName(String name) {
         String sql = "SELECT id, status_name, description FROM shipment_statuses WHERE status_name = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -131,13 +148,7 @@ public class ShipmentStatusDAOImpl extends AbstractDAO<ShipmentStatus> implement
             try (ResultSet rs = stm.executeQuery()) {
 
                 if (rs.next()) {
-
-                    ShipmentStatus s = new ShipmentStatus();
-                    s.setId(rs.getLong("id"));
-                    s.setStatusName(rs.getString("status_name"));
-                    s.setDescription(rs.getString("description"));
-
-                    return s;
+                    return mapResultSetToShipmentStatus(rs);
                 }
             }
 
@@ -145,6 +156,20 @@ public class ShipmentStatusDAOImpl extends AbstractDAO<ShipmentStatus> implement
             LOGGER.error("Error getting shipment status by name {}", name, e);
         }
 
+        finally {
+            releaseConnection(connection);
+        }
+
         return null;
+    }
+
+    private ShipmentStatus mapResultSetToShipmentStatus(ResultSet rs) throws SQLException {
+        ShipmentStatus s = new ShipmentStatus();
+
+        s.setId(rs.getLong("id"));
+        s.setStatusName(rs.getString("status_name"));
+        s.setDescription(rs.getString("description"));
+
+        return s;
     }
 }

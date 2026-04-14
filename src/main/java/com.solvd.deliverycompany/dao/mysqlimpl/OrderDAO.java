@@ -1,5 +1,6 @@
-package com.solvd.deliverycompany.dao;
+package com.solvd.deliverycompany.dao.mysqlimpl;
 
+import com.solvd.deliverycompany.dao.IOrderDAO;
 import com.solvd.deliverycompany.model.Address;
 import com.solvd.deliverycompany.model.Customer;
 import com.solvd.deliverycompany.model.Order;
@@ -13,18 +14,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderDAOImpl extends AbstractDAO<Order> implements IOrderDAO {
+public class OrderDAO extends AbstractMySQLDAO implements IOrderDAO {
 
-    private static final Logger LOGGER = LogManager.getLogger(OrderDAOImpl.class);
-
-    public OrderDAOImpl(Connection connection) {
-        super(connection);
-    }
+    private static final Logger LOGGER = LogManager.getLogger(OrderDAO.class);
 
     @Override
     public void create(Order order) {
         String sql = "INSERT INTO Orders (customer_id, courier_id, status_id, created_at) " +
                 "VALUES (?, ?, ?, ?)";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -38,12 +37,18 @@ public class OrderDAOImpl extends AbstractDAO<Order> implements IOrderDAO {
         } catch (SQLException e) {
             LOGGER.error("Error creating order", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public Order getById(Long id) {
         String sql = "SELECT id, customer_id, address_id, status, created_at, total_amount " +
                 "FROM Orders WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -52,28 +57,16 @@ public class OrderDAOImpl extends AbstractDAO<Order> implements IOrderDAO {
             try (ResultSet rs = stm.executeQuery()) {
 
                 if (rs.next()) {
-                    Order o = new Order();
-
-                    o.setId(rs.getLong("id"));
-
-                    Customer customer = new Customer();
-                    customer.setId(rs.getLong("customer_id"));
-                    o.setCustomer(customer);
-
-                    Address address = new Address();
-                    address.setId(rs.getLong("address_id"));
-                    o.setAddress(address);
-
-                    o.setStatus(rs.getString("status"));
-                    o.setOrderDate(rs.getString("created_at"));
-                    o.setTotalAmount(rs.getDouble("total_amount"));
-
-                    return o;
+                    return mapResultSetToOrder(rs);
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting order by id {}", id, e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return null;
@@ -85,31 +78,21 @@ public class OrderDAOImpl extends AbstractDAO<Order> implements IOrderDAO {
 
         List<Order> orders = new ArrayList<>();
 
+        Connection connection = getConnection();
+
         try (PreparedStatement stm = connection.prepareStatement(sql);
              ResultSet rs = stm.executeQuery()) {
 
             while (rs.next()) {
-                Order o = new Order();
-
-                o.setId(rs.getLong("id"));
-
-                Customer customer = new Customer();
-                customer.setId(rs.getLong("customer_id"));
-                o.setCustomer(customer);
-
-                Address address = new Address();
-                address.setId(rs.getLong("address_id"));
-                o.setAddress(address);
-
-                o.setStatus(rs.getString("status"));
-                o.setOrderDate(rs.getString("created_at"));
-                o.setTotalAmount(rs.getDouble("total_amount"));
-
-                orders.add(o);
+                orders.add(mapResultSetToOrder(rs));
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting all orders", e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return orders;
@@ -119,6 +102,8 @@ public class OrderDAOImpl extends AbstractDAO<Order> implements IOrderDAO {
     public void update(Order order) {
         String sql = "UPDATE Orders SET customer_id = ?, courier_id = ?, status_id = ?, " +
                 "created_at = ? WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -138,11 +123,17 @@ public class OrderDAOImpl extends AbstractDAO<Order> implements IOrderDAO {
         } catch (SQLException e) {
             LOGGER.error("Error updating order", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public void delete(Long id) {
         String sql = "DELETE FROM Orders WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -157,6 +148,10 @@ public class OrderDAOImpl extends AbstractDAO<Order> implements IOrderDAO {
         } catch (SQLException e) {
             LOGGER.error("Error deleting order with id {}", id, e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
@@ -165,6 +160,8 @@ public class OrderDAOImpl extends AbstractDAO<Order> implements IOrderDAO {
                 "FROM Orders WHERE customer_id = ?";
         List<Order> orders = new ArrayList<>();
 
+        Connection connection = getConnection();
+
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
             stm.setLong(1, customerId);
@@ -172,28 +169,16 @@ public class OrderDAOImpl extends AbstractDAO<Order> implements IOrderDAO {
             try (ResultSet rs = stm.executeQuery()) {
 
                 while (rs.next()) {
-                    Order o = new Order();
-
-                    o.setId(rs.getLong("id"));
-
-                    Customer customer = new Customer();
-                    customer.setId(rs.getLong("customer_id"));
-                    o.setCustomer(customer);
-
-                    Address address = new Address();
-                    address.setId(rs.getLong("address_id"));
-                    o.setAddress(address);
-
-                    o.setStatus(rs.getString("status"));
-                    o.setOrderDate(rs.getString("created_at"));
-                    o.setTotalAmount(rs.getDouble("total_amount"));
-
-                    orders.add(o);
+                    orders.add(mapResultSetToOrder(rs));
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting orders by customerId {}", customerId, e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return orders;
@@ -205,6 +190,8 @@ public class OrderDAOImpl extends AbstractDAO<Order> implements IOrderDAO {
                 "FROM Orders WHERE courier_id = ?";
         List<Order> orders = new ArrayList<>();
 
+        Connection connection = getConnection();
+
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
             stm.setLong(1, courierId);
@@ -212,23 +199,7 @@ public class OrderDAOImpl extends AbstractDAO<Order> implements IOrderDAO {
             try (ResultSet rs = stm.executeQuery()) {
 
                 while (rs.next()) {
-                    Order o = new Order();
-
-                    o.setId(rs.getLong("id"));
-
-                    Customer customer = new Customer();
-                    customer.setId(rs.getLong("customer_id"));
-                    o.setCustomer(customer);
-
-                    Address address = new Address();
-                    address.setId(rs.getLong("address_id"));
-                    o.setAddress(address);
-
-                    o.setStatus(rs.getString("status"));
-                    o.setOrderDate(rs.getString("created_at"));
-                    o.setTotalAmount(rs.getDouble("total_amount"));
-
-                    orders.add(o);
+                    orders.add(mapResultSetToOrder(rs));
                 }
             }
 
@@ -236,6 +207,30 @@ public class OrderDAOImpl extends AbstractDAO<Order> implements IOrderDAO {
             LOGGER.error("Error getting orders by courierId {}", courierId, e);
         }
 
+        finally {
+            releaseConnection(connection);
+        }
+
         return orders;
+    }
+
+    private Order mapResultSetToOrder(ResultSet rs) throws SQLException {
+        Order o = new Order();
+
+        o.setId(rs.getLong("id"));
+
+        Customer customer = new Customer();
+        customer.setId(rs.getLong("customer_id"));
+        o.setCustomer(customer);
+
+        Address address = new Address();
+        address.setId(rs.getLong("address_id"));
+        o.setAddress(address);
+
+        o.setStatus(rs.getString("status"));
+        o.setOrderDate(rs.getString("created_at"));
+        o.setTotalAmount(rs.getDouble("total_amount"));
+
+        return o;
     }
 }

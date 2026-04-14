@@ -2,34 +2,21 @@ package com.solvd.deliverycompany.model;
 
 import com.solvd.deliverycompany.model.BaseEntity;
 
-public class Courier extends BaseEntity {
-    private String fullName;
+public class Courier extends User {
     private String phone;
     private String email;
     private String vehicleType;
     private String status;
-    private String createdAt;
 
     public Courier() {
     }
 
-    public Courier(Long id, String fullName, String phone, String email,
-                   String vehicleType, String status, String createdAt) {
-        super(id);
-        this.fullName = fullName;
+    public Courier(Long id, String phone, String email,
+                   String vehicleType, String status) {
         this.phone = phone;
         this.email = email;
         this.vehicleType = vehicleType;
         this.status = status;
-        this.createdAt = createdAt;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     public String getPhone() {
@@ -62,13 +49,5 @@ public class Courier extends BaseEntity {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
     }
 }

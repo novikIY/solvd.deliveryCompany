@@ -1,5 +1,6 @@
-package com.solvd.deliverycompany.dao;
+package com.solvd.deliverycompany.dao.mysqlimpl;
 
+import com.solvd.deliverycompany.dao.IWarehouseDAO;
 import com.solvd.deliverycompany.model.Warehouse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,17 +12,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WarehouseDAOImpl extends AbstractDAO<Warehouse> implements IWarehouseDAO {
+public class WarehouseDAO extends AbstractMySQLDAO implements IWarehouseDAO {
 
-    private static final Logger LOGGER = LogManager.getLogger(WarehouseDAOImpl.class);
-
-    public WarehouseDAOImpl(Connection connection) {
-        super(connection);
-    }
+    private static final Logger LOGGER = LogManager.getLogger(WarehouseDAO.class);
 
     @Override
     public void create(Warehouse warehouse) {
         String sql = "INSERT INTO Warehouses (name, address, city, capacity, phone, created_at) VALUES (?, ?, ?, ?, ?, ?)";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -37,11 +36,17 @@ public class WarehouseDAOImpl extends AbstractDAO<Warehouse> implements IWarehou
         } catch (SQLException e) {
             LOGGER.error("Error creating warehouse", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public Warehouse getById(Long id) {
         String sql = "SELECT id, name, address, city, capacity, phone, created_at FROM Warehouses WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -50,22 +55,16 @@ public class WarehouseDAOImpl extends AbstractDAO<Warehouse> implements IWarehou
             try (ResultSet rs = stm.executeQuery()) {
 
                 if (rs.next()) {
-                    Warehouse w = new Warehouse();
-
-                    w.setId(rs.getLong("id"));
-                    w.setName(rs.getString("name"));
-                    w.setAddress(rs.getString("address"));
-                    w.setCity(rs.getString("city"));
-                    w.setCapacity(rs.getInt("capacity"));
-                    w.setPhone(rs.getString("phone"));
-                    w.setCreatedAt(rs.getString("created_at"));
-
-                    return w;
+                    return mapResultSetToWarehouse(rs);
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting warehouse by id {}", id, e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return null;
@@ -76,25 +75,21 @@ public class WarehouseDAOImpl extends AbstractDAO<Warehouse> implements IWarehou
         String sql = "SELECT id, name, address, city, capacity, phone, created_at FROM Warehouses";
         List<Warehouse> list = new ArrayList<>();
 
+        Connection connection = getConnection();
+
         try (PreparedStatement stm = connection.prepareStatement(sql);
              ResultSet rs = stm.executeQuery()) {
 
             while (rs.next()) {
-                Warehouse w = new Warehouse();
-
-                w.setId(rs.getLong("id"));
-                w.setName(rs.getString("name"));
-                w.setAddress(rs.getString("address"));
-                w.setCity(rs.getString("city"));
-                w.setCapacity(rs.getInt("capacity"));
-                w.setPhone(rs.getString("phone"));
-                w.setCreatedAt(rs.getString("created_at"));
-
-                list.add(w);
+                list.add(mapResultSetToWarehouse(rs));
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting all warehouses", e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return list;
@@ -103,6 +98,8 @@ public class WarehouseDAOImpl extends AbstractDAO<Warehouse> implements IWarehou
     @Override
     public void update(Warehouse warehouse) {
         String sql = "UPDATE Warehouses SET name = ?, address = ?, city = ?, capacity = ?, phone = ?, created_at = ? WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -123,11 +120,17 @@ public class WarehouseDAOImpl extends AbstractDAO<Warehouse> implements IWarehou
         } catch (SQLException e) {
             LOGGER.error("Error updating warehouse", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public void delete(Long id) {
         String sql = "DELETE FROM Warehouses WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -142,12 +145,18 @@ public class WarehouseDAOImpl extends AbstractDAO<Warehouse> implements IWarehou
         } catch (SQLException e) {
             LOGGER.error("Error deleting warehouse", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public List<Warehouse> getByCity(String city) {
         String sql = "SELECT id, name, address, city, capacity, phone, created_at FROM Warehouses WHERE city = ?";
         List<Warehouse> list = new ArrayList<>();
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -156,22 +165,16 @@ public class WarehouseDAOImpl extends AbstractDAO<Warehouse> implements IWarehou
             try (ResultSet rs = stm.executeQuery()) {
 
                 while (rs.next()) {
-                    Warehouse w = new Warehouse();
-
-                    w.setId(rs.getLong("id"));
-                    w.setName(rs.getString("name"));
-                    w.setAddress(rs.getString("address"));
-                    w.setCity(rs.getString("city"));
-                    w.setCapacity(rs.getInt("capacity"));
-                    w.setPhone(rs.getString("phone"));
-                    w.setCreatedAt(rs.getString("created_at"));
-
-                    list.add(w);
+                    list.add(mapResultSetToWarehouse(rs));
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting warehouses by city {}", city, e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return list;
@@ -182,6 +185,8 @@ public class WarehouseDAOImpl extends AbstractDAO<Warehouse> implements IWarehou
         String sql = "SELECT id, name, address, city, capacity, phone, created_at FROM Warehouses WHERE capacity > ?";
         List<Warehouse> list = new ArrayList<>();
 
+        Connection connection = getConnection();
+
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
             stm.setInt(1, capacity);
@@ -189,22 +194,16 @@ public class WarehouseDAOImpl extends AbstractDAO<Warehouse> implements IWarehou
             try (ResultSet rs = stm.executeQuery()) {
 
                 while (rs.next()) {
-                    Warehouse w = new Warehouse();
-
-                    w.setId(rs.getLong("id"));
-                    w.setName(rs.getString("name"));
-                    w.setAddress(rs.getString("address"));
-                    w.setCity(rs.getString("city"));
-                    w.setCapacity(rs.getInt("capacity"));
-                    w.setPhone(rs.getString("phone"));
-                    w.setCreatedAt(rs.getString("created_at"));
-
-                    list.add(w);
+                    list.add(mapResultSetToWarehouse(rs));
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting warehouses by capacity", e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return list;
@@ -214,6 +213,8 @@ public class WarehouseDAOImpl extends AbstractDAO<Warehouse> implements IWarehou
     public Warehouse getByName(String name) {
         String sql = "SELECT id, name, address, city, capacity, phone, created_at FROM Warehouses WHERE name = ?";
 
+        Connection connection = getConnection();
+
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
             stm.setString(1, name);
@@ -221,17 +222,7 @@ public class WarehouseDAOImpl extends AbstractDAO<Warehouse> implements IWarehou
             try (ResultSet rs = stm.executeQuery()) {
 
                 if (rs.next()) {
-                    Warehouse w = new Warehouse();
-
-                    w.setId(rs.getLong("id"));
-                    w.setName(rs.getString("name"));
-                    w.setAddress(rs.getString("address"));
-                    w.setCity(rs.getString("city"));
-                    w.setCapacity(rs.getInt("capacity"));
-                    w.setPhone(rs.getString("phone"));
-                    w.setCreatedAt(rs.getString("created_at"));
-
-                    return w;
+                    return mapResultSetToWarehouse(rs);
                 }
             }
 
@@ -239,6 +230,24 @@ public class WarehouseDAOImpl extends AbstractDAO<Warehouse> implements IWarehou
             LOGGER.error("Error getting warehouse by name {}", name, e);
         }
 
+        finally {
+            releaseConnection(connection);
+        }
+
         return null;
+    }
+
+    private Warehouse mapResultSetToWarehouse(ResultSet rs) throws SQLException {
+        Warehouse w = new Warehouse();
+
+        w.setId(rs.getLong("id"));
+        w.setName(rs.getString("name"));
+        w.setAddress(rs.getString("address"));
+        w.setCity(rs.getString("city"));
+        w.setCapacity(rs.getInt("capacity"));
+        w.setPhone(rs.getString("phone"));
+        w.setCreatedAt(rs.getString("created_at"));
+
+        return w;
     }
 }

@@ -1,5 +1,6 @@
-package com.solvd.deliverycompany.dao;
+package com.solvd.deliverycompany.dao.mysqlimpl;
 
+import com.solvd.deliverycompany.dao.IPaymentDAO;
 import com.solvd.deliverycompany.model.Order;
 import com.solvd.deliverycompany.model.Payment;
 import com.solvd.deliverycompany.model.PaymentMethod;
@@ -13,17 +14,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PaymentDAOImpl extends AbstractDAO<Payment> implements IPaymentDAO {
+public class PaymentDAO extends AbstractMySQLDAO implements IPaymentDAO {
 
-    private static final Logger LOGGER = LogManager.getLogger(PaymentDAOImpl.class);
-
-    public PaymentDAOImpl(Connection connection) {
-        super(connection);
-    }
+    private static final Logger LOGGER = LogManager.getLogger(PaymentDAO.class);
 
     @Override
     public void create(Payment payment) {
         String sql = "INSERT INTO Payments (order_id, payment_method_id, amount, status, paid_at, created_at) VALUES (?, ?, ?, ?, ?, ?)";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -39,11 +38,17 @@ public class PaymentDAOImpl extends AbstractDAO<Payment> implements IPaymentDAO 
         } catch (SQLException e) {
             LOGGER.error("Error creating payment", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public Payment getById(Long id) {
         String sql = "SELECT id, order_id, payment_method_id, amount, status, paid_at, created_at FROM Payments WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -52,29 +57,16 @@ public class PaymentDAOImpl extends AbstractDAO<Payment> implements IPaymentDAO 
             try (ResultSet rs = stm.executeQuery()) {
 
                 if (rs.next()) {
-                    Payment p = new Payment();
-
-                    p.setId(rs.getLong("id"));
-
-                    Order order = new Order();
-                    order.setId(rs.getLong("order_id"));
-                    p.setOrder(order);
-
-                    PaymentMethod pm = new PaymentMethod();
-                    pm.setId(rs.getLong("payment_method_id"));
-                    p.setPaymentMethod(pm);
-
-                    p.setAmount(rs.getDouble("amount"));
-                    p.setStatus(rs.getString("status"));
-                    p.setPaidAt(rs.getString("paid_at"));
-                    p.setCreatedAt(rs.getString("created_at"));
-
-                    return p;
+                    return mapResultSetToPayment(rs);
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting payment by id {}", id, e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return null;
@@ -85,32 +77,21 @@ public class PaymentDAOImpl extends AbstractDAO<Payment> implements IPaymentDAO 
         String sql = "SELECT id, order_id, payment_method_id, amount, status, paid_at, created_at FROM Payments";
         List<Payment> payments = new ArrayList<>();
 
+        Connection connection = getConnection();
+
         try (PreparedStatement stm = connection.prepareStatement(sql);
              ResultSet rs = stm.executeQuery()) {
 
             while (rs.next()) {
-                Payment p = new Payment();
-
-                p.setId(rs.getLong("id"));
-
-                Order order = new Order();
-                order.setId(rs.getLong("order_id"));
-                p.setOrder(order);
-
-                PaymentMethod pm = new PaymentMethod();
-                pm.setId(rs.getLong("payment_method_id"));
-                p.setPaymentMethod(pm);
-
-                p.setAmount(rs.getDouble("amount"));
-                p.setStatus(rs.getString("status"));
-                p.setPaidAt(rs.getString("paid_at"));
-                p.setCreatedAt(rs.getString("created_at"));
-
-                payments.add(p);
+                payments.add(mapResultSetToPayment(rs));
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting all payments", e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return payments;
@@ -119,6 +100,8 @@ public class PaymentDAOImpl extends AbstractDAO<Payment> implements IPaymentDAO 
     @Override
     public void update(Payment payment) {
         String sql = "UPDATE Payments SET order_id = ?, payment_method_id = ?, amount = ?, status = ?, paid_at = ?, created_at = ? WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -139,11 +122,17 @@ public class PaymentDAOImpl extends AbstractDAO<Payment> implements IPaymentDAO 
         } catch (SQLException e) {
             LOGGER.error("Error updating payment", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public void delete(Long id) {
         String sql = "DELETE FROM Payments WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -158,12 +147,18 @@ public class PaymentDAOImpl extends AbstractDAO<Payment> implements IPaymentDAO 
         } catch (SQLException e) {
             LOGGER.error("Error deleting payment with id {}", id, e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public List<Payment> getByOrderId(Long orderId) {
         String sql = "SELECT id, order_id, payment_method_id, amount, status, paid_at, created_at FROM Payments WHERE order_id = ?";
         List<Payment> payments = new ArrayList<>();
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -172,24 +167,7 @@ public class PaymentDAOImpl extends AbstractDAO<Payment> implements IPaymentDAO 
             try (ResultSet rs = stm.executeQuery()) {
 
                 while (rs.next()) {
-                    Payment p = new Payment();
-
-                    p.setId(rs.getLong("id"));
-
-                    Order order = new Order();
-                    order.setId(rs.getLong("order_id"));
-                    p.setOrder(order);
-
-                    PaymentMethod pm = new PaymentMethod();
-                    pm.setId(rs.getLong("payment_method_id"));
-                    p.setPaymentMethod(pm);
-
-                    p.setAmount(rs.getDouble("amount"));
-                    p.setStatus(rs.getString("status"));
-                    p.setPaidAt(rs.getString("paid_at"));
-                    p.setCreatedAt(rs.getString("created_at"));
-
-                    payments.add(p);
+                    payments.add(mapResultSetToPayment(rs));
                 }
             }
 
@@ -197,6 +175,31 @@ public class PaymentDAOImpl extends AbstractDAO<Payment> implements IPaymentDAO 
             LOGGER.error("Error getting payments by orderId {}", orderId, e);
         }
 
+        finally {
+            releaseConnection(connection);
+        }
+
         return payments;
+    }
+
+    private Payment mapResultSetToPayment(ResultSet rs) throws SQLException {
+        Payment p = new Payment();
+
+        p.setId(rs.getLong("id"));
+
+        Order order = new Order();
+        order.setId(rs.getLong("order_id"));
+        p.setOrder(order);
+
+        PaymentMethod pm = new PaymentMethod();
+        pm.setId(rs.getLong("payment_method_id"));
+        p.setPaymentMethod(pm);
+
+        p.setAmount(rs.getDouble("amount"));
+        p.setStatus(rs.getString("status"));
+        p.setPaidAt(rs.getString("paid_at"));
+        p.setCreatedAt(rs.getString("created_at"));
+
+        return p;
     }
 }

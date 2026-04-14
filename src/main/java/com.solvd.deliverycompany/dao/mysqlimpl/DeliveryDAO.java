@@ -1,5 +1,6 @@
-package com.solvd.deliverycompany.dao;
+package com.solvd.deliverycompany.dao.mysqlimpl;
 
+import com.solvd.deliverycompany.dao.IDeliveryDAO;
 import com.solvd.deliverycompany.model.Courier;
 import com.solvd.deliverycompany.model.Delivery;
 import com.solvd.deliverycompany.model.ShipmentStatus;
@@ -14,17 +15,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeliveryDAOImpl extends AbstractDAO<Delivery> implements IDeliveryDAO {
+public class DeliveryDAO extends AbstractMySQLDAO implements IDeliveryDAO {
 
-    private static final Logger LOGGER = LogManager.getLogger(DeliveryDAOImpl.class);
-
-    public DeliveryDAOImpl(Connection connection) {
-        super(connection);
-    }
+    private static final Logger LOGGER = LogManager.getLogger(DeliveryDAO.class);
 
     @Override
     public void create(Delivery delivery) {
         String sql = "INSERT INTO Deliveries (order_id, courier_id, status_id, picked_up_at, delivered_at, created_at) VALUES (?, ?, ?, ?, ?, ?)";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -40,11 +39,17 @@ public class DeliveryDAOImpl extends AbstractDAO<Delivery> implements IDeliveryD
         } catch (SQLException e) {
             LOGGER.error("Error creating delivery", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public Delivery getById(Long id) {
         String sql = "SELECT id, order_id, courier_id, status_id, picked_up_at, delivered_at, created_at FROM Deliveries WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -53,32 +58,16 @@ public class DeliveryDAOImpl extends AbstractDAO<Delivery> implements IDeliveryD
             try (ResultSet rs = stm.executeQuery()) {
 
                 if (rs.next()) {
-                    Delivery d = new Delivery();
-
-                    d.setId(rs.getLong("id"));
-
-                    Order o = new Order();
-                    o.setId(rs.getLong("order_id"));
-                    d.setOrder(o);
-
-                    Courier c = new Courier();
-                    c.setId(rs.getLong("courier_id"));
-                    d.setCourier(c);
-
-                    ShipmentStatus s = new ShipmentStatus();
-                    s.setId(rs.getLong("status_id"));
-                    d.setStatus(s);
-
-                    d.setPickedUpAt(rs.getString("picked_up_at"));
-                    d.setDeliveredAt(rs.getString("delivered_at"));
-                    d.setCreatedAt(rs.getString("created_at"));
-
-                    return d;
+                    return mapResultSetToDelivery(rs);
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting delivery by id {}", id, e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return null;
@@ -90,36 +79,21 @@ public class DeliveryDAOImpl extends AbstractDAO<Delivery> implements IDeliveryD
 
         List<Delivery> list = new ArrayList<>();
 
+        Connection connection = getConnection();
+
         try (PreparedStatement stm = connection.prepareStatement(sql);
              ResultSet rs = stm.executeQuery()) {
 
             while (rs.next()) {
-
-                Delivery d = new Delivery();
-
-                d.setId(rs.getLong("id"));
-
-                Order o = new Order();
-                o.setId(rs.getLong("order_id"));
-                d.setOrder(o);
-
-                Courier c = new Courier();
-                c.setId(rs.getLong("courier_id"));
-                d.setCourier(c);
-
-                ShipmentStatus s = new ShipmentStatus();
-                s.setId(rs.getLong("status_id"));
-                d.setStatus(s);
-
-                d.setPickedUpAt(rs.getString("picked_up_at"));
-                d.setDeliveredAt(rs.getString("delivered_at"));
-                d.setCreatedAt(rs.getString("created_at"));
-
-                list.add(d);
+                list.add(mapResultSetToDelivery(rs));
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting all deliveries", e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return list;
@@ -128,6 +102,8 @@ public class DeliveryDAOImpl extends AbstractDAO<Delivery> implements IDeliveryD
     @Override
     public void update(Delivery delivery) {
         String sql = "UPDATE Deliveries SET order_id = ?, courier_id = ?, status_id = ?, picked_up_at = ?, delivered_at = ?, created_at = ? WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -148,11 +124,17 @@ public class DeliveryDAOImpl extends AbstractDAO<Delivery> implements IDeliveryD
         } catch (SQLException e) {
             LOGGER.error("Error updating delivery", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public void delete(Long id) {
         String sql = "DELETE FROM Deliveries WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -167,5 +149,33 @@ public class DeliveryDAOImpl extends AbstractDAO<Delivery> implements IDeliveryD
         } catch (SQLException e) {
             LOGGER.error("Error deleting delivery", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
+
+    private Delivery mapResultSetToDelivery(ResultSet rs) throws SQLException {
+        Delivery d = new Delivery();
+
+        d.setId(rs.getLong("id"));
+
+        Order o = new Order();
+        o.setId(rs.getLong("order_id"));
+        d.setOrder(o);
+
+        Courier c = new Courier();
+        c.setId(rs.getLong("courier_id"));
+        d.setCourier(c);
+
+        ShipmentStatus s = new ShipmentStatus();
+        s.setId(rs.getLong("status_id"));
+        d.setStatus(s);
+
+        d.setPickedUpAt(rs.getString("picked_up_at"));
+        d.setDeliveredAt(rs.getString("delivered_at"));
+        d.setCreatedAt(rs.getString("created_at"));
+
+        return d;
     }
+}

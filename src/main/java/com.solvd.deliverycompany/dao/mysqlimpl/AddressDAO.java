@@ -1,5 +1,6 @@
-package com.solvd.deliverycompany.dao;
+package com.solvd.deliverycompany.dao.mysqlimpl;
 
+import com.solvd.deliverycompany.dao.IAddressDAO;
 import com.solvd.deliverycompany.model.Address;
 import com.solvd.deliverycompany.model.Customer;
 import org.apache.logging.log4j.LogManager;
@@ -12,17 +13,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddressDAOImpl extends AbstractDAO<Address> implements IAddressDAO {
+public class AddressDAO extends AbstractMySQLDAO implements IAddressDAO {
 
-    private static final Logger LOGGER = LogManager.getLogger(AddressDAOImpl.class);
-
-    public AddressDAOImpl(Connection connection) {
-        super(connection);
-    }
+    private static final Logger LOGGER = LogManager.getLogger(AddressDAO.class);
 
     @Override
     public void create(Address address) {
+
         String sql = "INSERT INTO Addresses (customer_id, street, city, postal_code, country) VALUES (?, ?, ?, ?, ?)";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -36,12 +36,17 @@ public class AddressDAOImpl extends AbstractDAO<Address> implements IAddressDAO 
 
         } catch (SQLException e) {
             LOGGER.error("Error creating address", e);
+        } finally {
+            releaseConnection(connection);
         }
     }
 
     @Override
     public Address getById(Long id) {
+
         String sql = "SELECT id, customer_id, street, city, postal_code, country FROM Addresses WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -50,25 +55,14 @@ public class AddressDAOImpl extends AbstractDAO<Address> implements IAddressDAO 
             try (ResultSet rs = stm.executeQuery()) {
 
                 if (rs.next()) {
-                    Address a = new Address();
-
-                    a.setId(rs.getLong("id"));
-
-                    Customer c = new Customer();
-                    c.setId(rs.getLong("customer_id"));
-                    a.setCustomer(c);
-
-                    a.setStreet(rs.getString("street"));
-                    a.setCity(rs.getString("city"));
-                    a.setPostalCode(rs.getString("postal_code"));
-                    a.setCountry(rs.getString("country"));
-
-                    return a;
+                    return mapResultSetToAddress(rs);
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting address by id {}", id, e);
+        } finally {
+            releaseConnection(connection);
         }
 
         return null;
@@ -76,31 +70,24 @@ public class AddressDAOImpl extends AbstractDAO<Address> implements IAddressDAO 
 
     @Override
     public List<Address> getAll() {
+
         String sql = "SELECT id, customer_id, street, city, postal_code, country FROM Addresses";
+
         List<Address> list = new ArrayList<>();
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql);
              ResultSet rs = stm.executeQuery()) {
 
             while (rs.next()) {
-                Address a = new Address();
-
-                a.setId(rs.getLong("id"));
-
-                Customer c = new Customer();
-                c.setId(rs.getLong("customer_id"));
-                a.setCustomer(c);
-
-                a.setStreet(rs.getString("street"));
-                a.setCity(rs.getString("city"));
-                a.setPostalCode(rs.getString("postal_code"));
-                a.setCountry(rs.getString("country"));
-
-                list.add(a);
+                list.add(mapResultSetToAddress(rs));
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting all addresses", e);
+        } finally {
+            releaseConnection(connection);
         }
 
         return list;
@@ -108,7 +95,10 @@ public class AddressDAOImpl extends AbstractDAO<Address> implements IAddressDAO 
 
     @Override
     public void update(Address address) {
+
         String sql = "UPDATE Addresses SET customer_id = ?, street = ?, city = ?, postal_code = ?, country = ? WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -119,41 +109,42 @@ public class AddressDAOImpl extends AbstractDAO<Address> implements IAddressDAO 
             stm.setString(5, address.getCountry());
             stm.setLong(6, address.getId());
 
-            int rows = stm.executeUpdate();
-
-            if (rows == 0) {
-                LOGGER.warn("No address found with id {}", address.getId());
-            }
+            stm.executeUpdate();
 
         } catch (SQLException e) {
             LOGGER.error("Error updating address", e);
+        } finally {
+            releaseConnection(connection);
         }
     }
 
     @Override
     public void delete(Long id) {
+
         String sql = "DELETE FROM Addresses WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
             stm.setLong(1, id);
-
-            int rows = stm.executeUpdate();
-
-            if (rows == 0) {
-                LOGGER.warn("No address found to delete with id {}", id);
-            }
+            stm.executeUpdate();
 
         } catch (SQLException e) {
             LOGGER.error("Error deleting address", e);
+        } finally {
+            releaseConnection(connection);
         }
     }
 
-
     @Override
     public List<Address> getByCustomerId(Long customerId) {
+
         String sql = "SELECT id, customer_id, street, city, postal_code, country FROM Addresses WHERE customer_id = ?";
+
         List<Address> list = new ArrayList<>();
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -162,25 +153,14 @@ public class AddressDAOImpl extends AbstractDAO<Address> implements IAddressDAO 
             try (ResultSet rs = stm.executeQuery()) {
 
                 while (rs.next()) {
-                    Address a = new Address();
-
-                    a.setId(rs.getLong("id"));
-
-                    Customer c = new Customer();
-                    c.setId(rs.getLong("customer_id"));
-                    a.setCustomer(c);
-
-                    a.setStreet(rs.getString("street"));
-                    a.setCity(rs.getString("city"));
-                    a.setPostalCode(rs.getString("postal_code"));
-                    a.setCountry(rs.getString("country"));
-
-                    list.add(a);
+                    list.add(mapResultSetToAddress(rs));
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting addresses by customerId {}", customerId, e);
+        } finally {
+            releaseConnection(connection);
         }
 
         return list;
@@ -188,8 +168,12 @@ public class AddressDAOImpl extends AbstractDAO<Address> implements IAddressDAO 
 
     @Override
     public List<Address> getByCity(String city) {
+
         String sql = "SELECT id, customer_id, street, city, postal_code, country FROM Addresses WHERE city = ?";
+
         List<Address> list = new ArrayList<>();
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -198,25 +182,14 @@ public class AddressDAOImpl extends AbstractDAO<Address> implements IAddressDAO 
             try (ResultSet rs = stm.executeQuery()) {
 
                 while (rs.next()) {
-                    Address a = new Address();
-
-                    a.setId(rs.getLong("id"));
-
-                    Customer c = new Customer();
-                    c.setId(rs.getLong("customer_id"));
-                    a.setCustomer(c);
-
-                    a.setStreet(rs.getString("street"));
-                    a.setCity(rs.getString("city"));
-                    a.setPostalCode(rs.getString("postal_code"));
-                    a.setCountry(rs.getString("country"));
-
-                    list.add(a);
+                    list.add(mapResultSetToAddress(rs));
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting addresses by city {}", city, e);
+        } finally {
+            releaseConnection(connection);
         }
 
         return list;
@@ -224,7 +197,10 @@ public class AddressDAOImpl extends AbstractDAO<Address> implements IAddressDAO 
 
     @Override
     public Address getByPostalCode(String postalCode) {
+
         String sql = "SELECT id, customer_id, street, city, postal_code, country FROM Addresses WHERE postal_code = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -233,25 +209,14 @@ public class AddressDAOImpl extends AbstractDAO<Address> implements IAddressDAO 
             try (ResultSet rs = stm.executeQuery()) {
 
                 if (rs.next()) {
-                    Address a = new Address();
-
-                    a.setId(rs.getLong("id"));
-
-                    Customer c = new Customer();
-                    c.setId(rs.getLong("customer_id"));
-                    a.setCustomer(c);
-
-                    a.setStreet(rs.getString("street"));
-                    a.setCity(rs.getString("city"));
-                    a.setPostalCode(rs.getString("postal_code"));
-                    a.setCountry(rs.getString("country"));
-
-                    return a;
+                    return mapResultSetToAddress(rs);
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting address by postalCode {}", postalCode, e);
+        } finally {
+            releaseConnection(connection);
         }
 
         return null;
@@ -259,20 +224,37 @@ public class AddressDAOImpl extends AbstractDAO<Address> implements IAddressDAO 
 
     @Override
     public void deleteByCustomerId(Long customerId) {
+
         String sql = "DELETE FROM Addresses WHERE customer_id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
             stm.setLong(1, customerId);
-
-            int rows = stm.executeUpdate();
-
-            if (rows == 0) {
-                LOGGER.warn("No addresses found for customerId {}", customerId);
-            }
+            stm.executeUpdate();
 
         } catch (SQLException e) {
             LOGGER.error("Error deleting addresses by customerId {}", customerId, e);
+        } finally {
+            releaseConnection(connection);
         }
+    }
+
+    private Address mapResultSetToAddress(ResultSet rs) throws SQLException {
+        Address a = new Address();
+
+        a.setId(rs.getLong("id"));
+
+        Customer c = new Customer();
+        c.setId(rs.getLong("customer_id"));
+        a.setCustomer(c);
+
+        a.setStreet(rs.getString("street"));
+        a.setCity(rs.getString("city"));
+        a.setPostalCode(rs.getString("postal_code"));
+        a.setCountry(rs.getString("country"));
+
+        return a;
     }
 }

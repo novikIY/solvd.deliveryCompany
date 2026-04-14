@@ -1,5 +1,6 @@
-package com.solvd.deliverycompany.dao;
+package com.solvd.deliverycompany.dao.mysqlimpl;
 
+import com.solvd.deliverycompany.dao.IPaymentMethodDAO;
 import com.solvd.deliverycompany.model.PaymentMethod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,17 +12,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PaymentMethodDAOImpl extends AbstractDAO<PaymentMethod> implements IPaymentMethodDAO {
+public class PaymentMethodDAO extends AbstractMySQLDAO implements IPaymentMethodDAO {
 
-    private static final Logger LOGGER = LogManager.getLogger(PaymentMethodDAOImpl.class);
-
-    public PaymentMethodDAOImpl(Connection connection) {
-        super(connection);
-    }
+    private static final Logger LOGGER = LogManager.getLogger(PaymentMethodDAO.class);
 
     @Override
     public void create(PaymentMethod pm) {
         String sql = "INSERT INTO PaymentMethods (method_name, is_active, created_at) VALUES (?, ?, ?)";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -34,11 +33,17 @@ public class PaymentMethodDAOImpl extends AbstractDAO<PaymentMethod> implements 
         } catch (SQLException e) {
             LOGGER.error("Error creating payment method", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public PaymentMethod getById(Long id) {
         String sql = "SELECT id, method_name, is_active, created_at FROM PaymentMethods WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -47,19 +52,16 @@ public class PaymentMethodDAOImpl extends AbstractDAO<PaymentMethod> implements 
             try (ResultSet rs = stm.executeQuery()) {
 
                 if (rs.next()) {
-                    PaymentMethod pm = new PaymentMethod();
-
-                    pm.setId(rs.getLong("id"));
-                    pm.setMethodName(rs.getString("method_name"));
-                    pm.setActive(rs.getBoolean("is_active"));
-                    pm.setCreatedAt(rs.getString("created_at"));
-
-                    return pm;
+                    return mapResultSetToPaymentMethod(rs);
                 }
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting payment method by id {}", id, e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return null;
@@ -70,22 +72,21 @@ public class PaymentMethodDAOImpl extends AbstractDAO<PaymentMethod> implements 
         String sql = "SELECT id, method_name, is_active, created_at FROM PaymentMethods";
         List<PaymentMethod> list = new ArrayList<>();
 
+        Connection connection = getConnection();
+
         try (PreparedStatement stm = connection.prepareStatement(sql);
              ResultSet rs = stm.executeQuery()) {
 
             while (rs.next()) {
-                PaymentMethod pm = new PaymentMethod();
-
-                pm.setId(rs.getLong("id"));
-                pm.setMethodName(rs.getString("method_name"));
-                pm.setActive(rs.getBoolean("is_active"));
-                pm.setCreatedAt(rs.getString("created_at"));
-
-                list.add(pm);
+                list.add(mapResultSetToPaymentMethod(rs));
             }
 
         } catch (SQLException e) {
             LOGGER.error("Error getting all payment methods", e);
+        }
+
+        finally {
+            releaseConnection(connection);
         }
 
         return list;
@@ -94,6 +95,8 @@ public class PaymentMethodDAOImpl extends AbstractDAO<PaymentMethod> implements 
     @Override
     public void update(PaymentMethod pm) {
         String sql = "UPDATE PaymentMethods SET method_name = ?, is_active = ?, created_at = ? WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -111,11 +114,17 @@ public class PaymentMethodDAOImpl extends AbstractDAO<PaymentMethod> implements 
         } catch (SQLException e) {
             LOGGER.error("Error updating payment method", e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
     }
 
     @Override
     public void delete(Long id) {
         String sql = "DELETE FROM PaymentMethods WHERE id = ?";
+
+        Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
@@ -130,5 +139,20 @@ public class PaymentMethodDAOImpl extends AbstractDAO<PaymentMethod> implements 
         } catch (SQLException e) {
             LOGGER.error("Error deleting payment method with id {}", id, e);
         }
+
+        finally {
+            releaseConnection(connection);
+        }
+    }
+
+    private PaymentMethod mapResultSetToPaymentMethod(ResultSet rs) throws SQLException {
+        PaymentMethod pm = new PaymentMethod();
+
+        pm.setId(rs.getLong("id"));
+        pm.setMethodName(rs.getString("method_name"));
+        pm.setActive(rs.getBoolean("is_active"));
+        pm.setCreatedAt(rs.getString("created_at"));
+
+        return pm;
     }
 }
