@@ -1,0 +1,104 @@
+<orders>
+
+    <order>
+        <id>1</id>
+        <customerId>1</customerId>
+        <addressId>1</addressId>
+
+        <items>
+            <item>
+                <id>1</id>
+                <itemName>Phone</itemName>
+                <quantity>1</quantity>
+                <price>100.50</price>
+            </item>
+            <item>
+                <id>2</id>
+                <itemName>Case</itemName>
+                <quantity>1</quantity>
+                <price>20.00</price>
+            </item>
+        </items>
+
+        <status>CREATED</status>
+        <orderDate>2026-04-15</orderDate>
+        <totalAmount>120.50</totalAmount>
+    </order>
+
+    <order>
+        <id>2</id>
+        <customerId>2</customerId>
+        <addressId>2</addressId>
+
+        <items>
+            <item>
+                <id>3</id>
+                <itemName>Laptop</itemName>
+                <quantity>1</quantity>
+                <price>750.00</price>
+            </item>
+        </items>
+
+        <status>SHIPPED</status>
+        <orderDate>2026-04-15</orderDate>
+        <totalAmount>750.00</totalAmount>
+    </order>
+
+    <order>
+        <id>3</id>
+        <customerId>3</customerId>
+        <addressId>3</addressId>
+
+        <items>
+            <item>
+                <id>4</id>
+                <itemName>Headphones</itemName>
+                <quantity>2</quantity>
+                <price>50.00</price>
+            </item>
+        </items>
+
+        <status>DELIVERED</status>
+        <orderDate>2026-04-15</orderDate>
+        <totalAmount>100.00</totalAmount>
+    </order>
+
+    <order>
+        <id>4</id>
+        <customerId>4</customerId>
+        <addressId>4</addressId>
+
+        <items>
+            <item>
+                <id>5</id>
+                <itemName>Keyboard</itemName>
+                <quantity>1</quantity>
+                <price>49.99</price>
+            </item>
+        </items>
+
+        <status>CREATED</status>
+        <orderDate>2026-04-15</orderDate>
+        <totalAmount>49.99</totalAmount>
+    </order>
+
+    <order>
+        <id>5</id>
+        <customerId>5</customerId>
+        <addressId>5</addressId>
+
+        <items>
+            <item>
+                <id>6</id>
+                <itemName>Mouse</itemName>
+                <quantity>1</quantity>
+                <price>15.00</price>
+            </item>
+        </items>
+
+        <status>CANCELLED</status>
+        <orderDate>2026-04-15</orderDate>
+        <totalAmount>15.00</totalAmount>
+    </order>
+
+</orders>

@@ -1,0 +1,48 @@
+<addresses>
+
+    <address>
+        <id>1</id>
+        <customerId>1</customerId>
+        <street>Main Street 10</street>
+        <city>Warsaw</city>
+        <postalCode>00-001</postalCode>
+        <country>Poland</country>
+    </address>
+
+    <address>
+        <id>2</id>
+        <customerId>2</customerId>
+        <street>Green Avenue 5</street>
+        <city>Krakow</city>
+        <postalCode>30-002</postalCode>
+        <country>Poland</country>
+    </address>
+
+    <address>
+        <id>3</id>
+        <customerId>3</customerId>
+        <street>Sunset Boulevard 12</street>
+        <city>Gdansk</city>
+        <postalCode>80-003</postalCode>
+        <country>Poland</country>
+    </address>
+
+    <address>
+        <id>4</id>
+        <customerId>4</customerId>
+        <street>River Street 7</street>
+        <city>Wroclaw</city>
+        <postalCode>50-004</postalCode>
+        <country>Poland</country>
+    </address>
+
+    <address>
+        <id>5</id>
+        <customerId>5</customerId>
+        <street>Mountain Road 21</street>
+        <city>Poznan</city>
+        <postalCode>60-005</postalCode>
+        <country>Poland</country>
+    </address>
+
+</addresses>

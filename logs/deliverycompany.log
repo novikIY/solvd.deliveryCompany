@@ -1,0 +1,4 @@
+2026-04-15 15:30:52.347 [main] INFO  com.solvd.deliverycompany.Main - Users loaded: 7
+2026-04-15 15:30:52.348 [main] INFO  com.solvd.deliverycompany.Main - Addresses loaded: 5
+2026-04-15 15:30:52.348 [main] INFO  com.solvd.deliverycompany.Main - Orders loaded: 5
+2026-04-15 15:30:52.348 [main] INFO  com.solvd.deliverycompany.Main - Deliveries loaded: 5
