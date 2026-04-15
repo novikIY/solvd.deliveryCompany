@@ -1,4 +1,4 @@
-package com.solvd.deliverycompany.SAX;
+package com.solvd.deliverycompany.sax;
 
 import com.solvd.deliverycompany.model.Address;
 import com.solvd.deliverycompany.model.Customer;

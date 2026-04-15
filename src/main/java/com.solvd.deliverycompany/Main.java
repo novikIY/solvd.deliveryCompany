@@ -1,10 +1,10 @@
 package com.solvd.deliverycompany;
 
-import com.solvd.deliverycompany.SAX.AddressHandler;
-import com.solvd.deliverycompany.SAX.DeliveryHandler;
-import com.solvd.deliverycompany.SAX.OrderHandler;
-import com.solvd.deliverycompany.SAX.SaxParser;
-import com.solvd.deliverycompany.SAX.UsersHandler;
+import com.solvd.deliverycompany.sax.AddressHandler;
+import com.solvd.deliverycompany.sax.DeliveryHandler;
+import com.solvd.deliverycompany.sax.OrderHandler;
+import com.solvd.deliverycompany.sax.SaxParser;
+import com.solvd.deliverycompany.sax.UsersHandler;
 import com.solvd.deliverycompany.model.Address;
 import com.solvd.deliverycompany.model.Delivery;
 import com.solvd.deliverycompany.model.Order;

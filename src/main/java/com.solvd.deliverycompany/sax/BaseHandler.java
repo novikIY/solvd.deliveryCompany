@@ -1,4 +1,4 @@
-package com.solvd.deliverycompany.SAX;
+package com.solvd.deliverycompany.sax;
 
 import org.xml.sax.helpers.DefaultHandler;
 
