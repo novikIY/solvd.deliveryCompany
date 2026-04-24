@@ -1,5 +1,11 @@
 package com.solvd.deliverycompany;
 
+import com.solvd.deliverycompany.jaxb.AddressWrapper;
+import com.solvd.deliverycompany.jaxb.DeliveryWrapper;
+import com.solvd.deliverycompany.jaxb.JaxbParser;
+import com.solvd.deliverycompany.jaxb.JaxbWriter;
+import com.solvd.deliverycompany.jaxb.OrderWrapper;
+import com.solvd.deliverycompany.jaxb.UsersWrapper;
 import com.solvd.deliverycompany.sax.AddressHandler;
 import com.solvd.deliverycompany.sax.DeliveryHandler;
 import com.solvd.deliverycompany.sax.OrderHandler;
@@ -21,20 +27,49 @@ public class Main {
     public static void main(String[] args) {
 
         List<User> users =
-                SaxParser.parse("user.xml", new UsersHandler());
+                SaxParser.parse("users.xml", new UsersHandler());
 
         List<Address> addresses =
-                SaxParser.parse("address.xml", new AddressHandler());
+                SaxParser.parse("addresses.xml", new AddressHandler());
 
         List<Order> orders =
-                SaxParser.parse("order.xml", new OrderHandler());
+                SaxParser.parse("orders.xml", new OrderHandler());
 
         List<Delivery> deliveries =
-                SaxParser.parse("delivery.xml", new DeliveryHandler());
+                SaxParser.parse("deliveries.xml", new DeliveryHandler());
 
         LOGGER.info("Users loaded: {}", users.size());
         LOGGER.info("Addresses loaded: {}", addresses.size());
         LOGGER.info("Orders loaded: {}", orders.size());
         LOGGER.info("Deliveries loaded: {}", deliveries.size());
+
+        UsersWrapper wrapper =
+                JaxbParser.unmarshal("src/main/resources/users.xml", UsersWrapper.class);
+
+        LOGGER.info("Users loaded via JAXB: {}", wrapper.getUsers().size());
+
+        JaxbWriter.marshal(wrapper, "output-users.xml");
+
+        AddressWrapper addressWrapper =
+                JaxbParser.unmarshal("src/main/resources/addresses.xml", AddressWrapper.class);
+
+        LOGGER.info("Addresses loaded via JAXB: {}", addressWrapper.getAddresses().size());
+
+        JaxbWriter.marshal(addressWrapper, "output-address.xml");
+
+
+        OrderWrapper orderWrapper =
+                JaxbParser.unmarshal("src/main/resources/orders.xml", OrderWrapper.class);
+
+        LOGGER.info("Orders loaded via JAXB: {}", orderWrapper.getOrders().size());
+
+        JaxbWriter.marshal(orderWrapper, "output-orders.xml");
+
+        DeliveryWrapper deliveryWrapper =
+                JaxbParser.unmarshal("src/main/resources/deliveries.xml", DeliveryWrapper.class);
+
+        LOGGER.info("Deliveries loaded via JAXB: {}", deliveryWrapper.getDeliveries().size());
+
+        JaxbWriter.marshal(deliveryWrapper, "output-deliveries.xml");
     }
 }

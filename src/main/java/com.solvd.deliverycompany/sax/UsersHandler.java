@@ -16,8 +16,10 @@ public class UsersHandler extends BaseHandler<List<User>> {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
 
-        if ("user".equals(qName)) {
-            currentUser = null;
+        if ("customer".equals(qName)) {
+            currentUser = new Customer();
+        } else if ("courier".equals(qName)) {
+            currentUser = new Courier();
         }
 
         content.setLength(0);
@@ -35,78 +37,59 @@ public class UsersHandler extends BaseHandler<List<User>> {
 
         switch (qName) {
 
-            case "role":
-
-                String role = value.toUpperCase();
-
-                if ("CUSTOMER".equals(role)) {
-                    currentUser = new Customer();
-                } else if ("COURIER".equals(role)) {
-                    currentUser = new Courier();
-                } else {
-                    currentUser = new User();
-                }
-
-                currentUser.setRole(role);
-                break;
-
             case "id":
-                if (currentUser != null) {
-                    currentUser.setId(parseLongSafe(value));
+                if (!value.isEmpty()) {
+                    currentUser.setId(Long.parseLong(value));
                 }
                 break;
 
             case "firstName":
-                if (currentUser != null) {
-                    currentUser.setFirstName(value);
-                }
+                currentUser.setFirstName(value);
                 break;
 
             case "lastName":
-                if (currentUser != null) {
-                    currentUser.setLastName(value);
-                }
+                currentUser.setLastName(value);
+                break;
+
+            case "role":
+                currentUser.setRole(value);
                 break;
 
             case "email":
-                if (currentUser instanceof Customer c) {
-                    c.setEmail(value);
-                } else if (currentUser instanceof Courier c) {
-                    c.setEmail(value);
+                if (currentUser instanceof Customer) {
+                    ((Customer) currentUser).setEmail(value);
+                } else if (currentUser instanceof Courier) {
+                    ((Courier) currentUser).setEmail(value);
                 }
                 break;
 
             case "phone":
-                if (currentUser instanceof Customer c) {
-                    c.setPhone(value);
-                } else if (currentUser instanceof Courier c) {
-                    c.setPhone(value);
+                if (currentUser instanceof Customer) {
+                    ((Customer) currentUser).setPhone(value);
+                } else if (currentUser instanceof Courier) {
+                    ((Courier) currentUser).setPhone(value);
                 }
                 break;
 
             case "vehicleType":
-                if (currentUser instanceof Courier c) {
-                    c.setVehicleType(value);
+                if (currentUser instanceof Courier) {
+                    ((Courier) currentUser).setVehicleType(value);
                 }
                 break;
 
             case "status":
-                if (currentUser instanceof Courier c) {
-                    c.setStatus(value);
+                if (currentUser instanceof Courier) {
+                    ((Courier) currentUser).setStatus(value);
                 }
                 break;
 
             case "createdAt":
-                if (currentUser != null) {
-                    currentUser.setCreatedAt(value);
-                }
+                currentUser.setCreatedAt(value);
                 break;
 
-            case "user":
-                if (currentUser != null) {
-                    users.add(currentUser);
-                    currentUser = null;
-                }
+            case "customer":
+            case "courier":
+                users.add(currentUser);
                 break;
         }
     }

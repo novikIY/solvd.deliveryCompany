@@ -15,8 +15,8 @@
         <orderId>2</orderId>
         <courierId>7</courierId>
         <statusId>2</statusId>
-        <pickedUpAt>2026-04-15T11:00:00</pickedUpAt>
-        <deliveredAt></deliveredAt>
+        <pickedUpAt/>
+        <deliveredAt/>
         <createdAt>2026-04-15</createdAt>
     </delivery>
 
@@ -25,8 +25,8 @@
         <orderId>3</orderId>
         <courierId>6</courierId>
         <statusId>3</statusId>
-        <pickedUpAt></pickedUpAt>
-        <deliveredAt></deliveredAt>
+        <pickedUpAt/>
+        <deliveredAt/>
         <createdAt>2026-04-15</createdAt>
     </delivery>
 
@@ -35,8 +35,8 @@
         <orderId>4</orderId>
         <courierId>7</courierId>
         <statusId>1</statusId>
-        <pickedUpAt></pickedUpAt>
-        <deliveredAt></deliveredAt>
+        <pickedUpAt/>
+        <deliveredAt/>
         <createdAt>2026-04-15</createdAt>
     </delivery>
 
@@ -45,8 +45,8 @@
         <orderId>5</orderId>
         <courierId>6</courierId>
         <statusId>4</statusId>
-        <pickedUpAt></pickedUpAt>
-        <deliveredAt></deliveredAt>
+        <pickedUpAt/>
+        <deliveredAt/>
         <createdAt>2026-04-15</createdAt>
     </delivery>
 

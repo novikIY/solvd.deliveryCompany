@@ -1,6 +1,6 @@
 <users>
 
-    <user>
+    <customer>
         <id>1</id>
         <firstName>John</firstName>
         <lastName>Smith</lastName>
@@ -8,9 +8,9 @@
         <email>john@gmail.com</email>
         <phone>123456789</phone>
         <createdAt>2026-04-15</createdAt>
-    </user>
+    </customer>
 
-    <user>
+    <customer>
         <id>2</id>
         <firstName>Anna</firstName>
         <lastName>Brown</lastName>
@@ -18,9 +18,9 @@
         <email>anna@gmail.com</email>
         <phone>987654321</phone>
         <createdAt>2026-04-15</createdAt>
-    </user>
+    </customer>
 
-    <user>
+    <customer>
         <id>3</id>
         <firstName>Jack</firstName>
         <lastName>Johnson</lastName>
@@ -28,9 +28,9 @@
         <email>jack@gmail.com</email>
         <phone>758493091</phone>
         <createdAt>2026-04-15</createdAt>
-    </user>
+    </customer>
 
-    <user>
+    <customer>
         <id>4</id>
         <firstName>Tom</firstName>
         <lastName>Brown</lastName>
@@ -38,9 +38,9 @@
         <email>tom@gmail.com</email>
         <phone>987654334</phone>
         <createdAt>2026-04-15</createdAt>
-    </user>
+    </customer>
 
-    <user>
+    <customer>
         <id>5</id>
         <firstName>Petter</firstName>
         <lastName>Solberg</lastName>
@@ -48,9 +48,9 @@
         <email>petter@gmail.com</email>
         <phone>9849154321</phone>
         <createdAt>2026-04-15</createdAt>
-    </user>
+    </customer>
 
-    <user>
+    <courier>
         <id>6</id>
         <firstName>Mike</firstName>
         <lastName>Johnson</lastName>
@@ -60,18 +60,18 @@
         <vehicleType>BIKE</vehicleType>
         <status>AVAILABLE</status>
         <createdAt>2026-04-15</createdAt>
-    </user>
+    </courier>
 
-    <user>
+    <courier>
         <id>7</id>
         <firstName>Sam</firstName>
         <lastName>Smith</lastName>
         <role>COURIER</role>
         <email>sam@gmail.com</email>
         <phone>830549109</phone>
-        <vehicleType>Car</vehicleType>
+        <vehicleType>CAR</vehicleType>
         <status>AVAILABLE</status>
         <createdAt>2026-04-15</createdAt>
-    </user>
+    </courier>
 
 </users>

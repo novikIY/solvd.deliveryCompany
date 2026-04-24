@@ -1,6 +1,11 @@
 package com.solvd.deliverycompany.model;
 
-import com.solvd.deliverycompany.model.BaseEntity;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "courier")
+@XmlAccessorType(XmlAccessType.FIELD)
 
 public class Courier extends User {
     private String phone;

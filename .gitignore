@@ -15,6 +15,7 @@ buildNumber.properties
 # Logs
 logs/
 *.log
+output-*.xml
 
 # Eclipse m2e generated files
 # Eclipse Core

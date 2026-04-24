@@ -1,7 +1,13 @@
 package com.solvd.deliverycompany.model;
 
-public class User extends BaseEntity {
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSeeAlso({Customer.class, Courier.class})
+
+public class User extends BaseEntity {
     private String firstName;
     private String lastName;
     private String role;
