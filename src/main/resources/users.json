@@ -1,0 +1,71 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "firstName": "John",
+      "lastName": "Smith",
+      "role": "CUSTOMER",
+      "email": "john@gmail.com",
+      "phone": "123456789",
+      "createdAt": "2026-04-27"
+    },
+    {
+      "id": 2,
+      "firstName": "Anna",
+      "lastName": "Brown",
+      "role": "CUSTOMER",
+      "email": "anna@gmail.com",
+      "phone": "987654321",
+      "createdAt": "2026-04-15"
+    },
+    {
+      "id": 3,
+      "firstName": "Jack",
+      "lastName": "Johnson",
+      "role": "CUSTOMER",
+      "email": "jack@gmail.com",
+      "phone": "758493091",
+      "createdAt": "2026-04-15"
+    },
+    {
+      "id": 4,
+      "firstName": "Tom",
+      "lastName": "Brown",
+      "role": "CUSTOMER",
+      "email": "tom@gmail.com",
+      "phone": "987654334",
+      "createdAt": "2026-04-15"
+    },
+    {
+      "id": 5,
+      "firstName": "Petter",
+      "lastName": "Solberg",
+      "role": "CUSTOMER",
+      "email": "petter@gmail.com",
+      "phone": "9849154321",
+      "createdAt": "2026-04-15"
+    },
+    {
+      "id": 6,
+      "firstName": "Mike",
+      "lastName": "Johnson",
+      "role": "COURIER",
+      "email": "mike@gmail.com",
+      "phone": "999999109",
+      "vehicleType": "BIKE",
+      "status": "AVAILABLE",
+      "createdAt": "2026-04-15"
+    },
+    {
+      "id": 7,
+      "firstName": "Sam",
+      "lastName": "Smith",
+      "role": "COURIER",
+      "email": "sam@gmail.com",
+      "phone": "830549109",
+      "vehicleType": "CAR",
+      "status": "AVAILABLE",
+      "createdAt": "2026-04-15"
+    }
+  ]
+}

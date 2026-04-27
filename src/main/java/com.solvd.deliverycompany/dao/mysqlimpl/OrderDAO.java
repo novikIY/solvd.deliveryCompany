@@ -27,7 +27,7 @@ public class OrderDAO extends AbstractMySQLDAO implements IOrderDAO {
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
-            stm.setLong(1, order.getCustomer().getId());
+            stm.setLong(1, order.getCustomerId());
             stm.setString(2, order.getStatus());
             stm.setString(3, order.getOrderDate());
             stm.setDouble(4, order.getTotalAmount());
@@ -107,8 +107,8 @@ public class OrderDAO extends AbstractMySQLDAO implements IOrderDAO {
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
-            stm.setLong(1, order.getCustomer().getId());
-            stm.setLong(2, order.getAddress().getId());
+            stm.setLong(1, order.getCustomerId());
+            stm.setLong(2, order.getAddressId());
             stm.setString(3, order.getStatus());
             stm.setString(4, order.getOrderDate());
             stm.setDouble(5, order.getTotalAmount());
@@ -221,11 +221,11 @@ public class OrderDAO extends AbstractMySQLDAO implements IOrderDAO {
 
         Customer customer = new Customer();
         customer.setId(rs.getLong("customer_id"));
-        o.setCustomer(customer);
+        o.setCustomerId(customer.getId());
 
         Address address = new Address();
         address.setId(rs.getLong("address_id"));
-        o.setAddress(address);
+        o.setAddressId(address.getId());
 
         o.setStatus(rs.getString("status"));
         o.setOrderDate(rs.getString("created_at"));

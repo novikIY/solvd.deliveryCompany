@@ -1,10 +1,15 @@
 package com.solvd.deliverycompany.model;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 import java.util.List;
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+
 public class Order extends BaseEntity {
-    private Customer customer;
-    private Address address;
+    private Long customerId;
+    private Long addressId;
     private List<OrderItem> items;
     private String orderDate;
     private String status;
@@ -13,31 +18,31 @@ public class Order extends BaseEntity {
     public Order() {
     }
 
-    public Order(Long id, Customer customer, Address address, List<OrderItem> items,
+    public Order(Long id, Long customerId, Long addressId, List<OrderItem> items,
                  String orderDate, String status, Double totalAmount) {
         super(id);
-        this.customer = customer;
-        this.address = address;
+        this.customerId = customerId;
+        this.addressId = addressId;
         this.items = items;
         this.orderDate = orderDate;
         this.status = status;
         this.totalAmount = totalAmount;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Long getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 
-    public Address getAddress() {
-        return address;
+    public Long getAddressId() {
+        return addressId;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    public void setAddressId(Long addressId) {
+        this.addressId = addressId;
     }
 
     public List<OrderItem> getItems() {
@@ -64,7 +69,7 @@ public class Order extends BaseEntity {
         this.status = status;
     }
 
-    public double getTotalAmount() {
+    public Double getTotalAmount() {
         return totalAmount;
     }
 

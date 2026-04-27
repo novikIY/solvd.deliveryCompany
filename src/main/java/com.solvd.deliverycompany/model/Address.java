@@ -1,7 +1,5 @@
 package com.solvd.deliverycompany.model;
 
-import com.solvd.deliverycompany.model.BaseEntity;
-
 public class Address extends BaseEntity {
     private Customer customer;
     private String street;

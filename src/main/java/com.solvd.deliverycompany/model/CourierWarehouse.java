@@ -1,9 +1,5 @@
 package com.solvd.deliverycompany.model;
 
-import com.solvd.deliverycompany.model.BaseEntity;
-import com.solvd.deliverycompany.model.Courier;
-import com.solvd.deliverycompany.model.Warehouse;
-
 public class CourierWarehouse extends BaseEntity {
     private Courier courier;
     private Warehouse warehouse;

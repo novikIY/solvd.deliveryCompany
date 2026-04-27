@@ -1,5 +1,6 @@
 package com.solvd.deliverycompany;
 
+import com.solvd.deliverycompany.jackson.JacksonParser;
 import com.solvd.deliverycompany.jaxb.AddressWrapper;
 import com.solvd.deliverycompany.jaxb.DeliveryWrapper;
 import com.solvd.deliverycompany.jaxb.JaxbParser;
@@ -43,12 +44,12 @@ public class Main {
         LOGGER.info("Orders loaded: {}", orders.size());
         LOGGER.info("Deliveries loaded: {}", deliveries.size());
 
-        UsersWrapper wrapper =
+        UsersWrapper xmlWrapper =
                 JaxbParser.unmarshal("src/main/resources/users.xml", UsersWrapper.class);
 
-        LOGGER.info("Users loaded via JAXB: {}", wrapper.getUsers().size());
+        LOGGER.info("Users loaded via JAXB: {}", xmlWrapper.getUsers().size());
 
-        JaxbWriter.marshal(wrapper, "output-users.xml");
+        JaxbWriter.marshal(xmlWrapper, "output-users.xml");
 
         AddressWrapper addressWrapper =
                 JaxbParser.unmarshal("src/main/resources/addresses.xml", AddressWrapper.class);
@@ -58,12 +59,12 @@ public class Main {
         JaxbWriter.marshal(addressWrapper, "output-address.xml");
 
 
-        OrderWrapper orderWrapper =
+        OrderWrapper xmlOrderWrapper =
                 JaxbParser.unmarshal("src/main/resources/orders.xml", OrderWrapper.class);
 
-        LOGGER.info("Orders loaded via JAXB: {}", orderWrapper.getOrders().size());
+        LOGGER.info("Orders loaded via JAXB: {}", xmlOrderWrapper.getOrders().size());
 
-        JaxbWriter.marshal(orderWrapper, "output-orders.xml");
+        JaxbWriter.marshal(xmlOrderWrapper, "output-orders.xml");
 
         DeliveryWrapper deliveryWrapper =
                 JaxbParser.unmarshal("src/main/resources/deliveries.xml", DeliveryWrapper.class);
@@ -71,5 +72,19 @@ public class Main {
         LOGGER.info("Deliveries loaded via JAXB: {}", deliveryWrapper.getDeliveries().size());
 
         JaxbWriter.marshal(deliveryWrapper, "output-deliveries.xml");
+
+        UsersWrapper jsonUserWrapper =
+                JacksonParser.read("users.json", UsersWrapper.class);
+
+        LOGGER.info("Users loaded via Jackson: {}", jsonUserWrapper.getUsers().size());
+
+        JacksonParser.write(jsonUserWrapper, "target/users_out.json");
+
+        OrderWrapper jsonOrderWrapper =
+                JacksonParser.read("orders.json", OrderWrapper.class);
+
+        LOGGER.info("Orders loaded via Jackson: {}", jsonOrderWrapper.getOrders().size());
+
+        JacksonParser.write(jsonOrderWrapper, "target/orders_out.json");
     }
 }

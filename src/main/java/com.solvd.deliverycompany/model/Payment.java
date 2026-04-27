@@ -1,9 +1,5 @@
 package com.solvd.deliverycompany.model;
 
-import com.solvd.deliverycompany.model.BaseEntity;
-import com.solvd.deliverycompany.model.Order;
-import com.solvd.deliverycompany.model.PaymentMethod;
-
 public class Payment extends BaseEntity {
     private Order order;
     private PaymentMethod paymentMethod;

@@ -1,11 +1,23 @@
 package com.solvd.deliverycompany.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso({Customer.class, Courier.class})
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "role"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Customer.class, name = "CUSTOMER"),
+        @JsonSubTypes.Type(value = Courier.class, name = "COURIER")
+})
 
 public class User extends BaseEntity {
     private String firstName;

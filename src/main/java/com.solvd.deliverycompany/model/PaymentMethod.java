@@ -1,7 +1,5 @@
 package com.solvd.deliverycompany.model;
 
-import com.solvd.deliverycompany.model.BaseEntity;
-
 public class PaymentMethod extends BaseEntity {
     private String methodName;
     private Boolean isActive;

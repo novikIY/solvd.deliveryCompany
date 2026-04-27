@@ -1,8 +1,5 @@
 package com.solvd.deliverycompany.model;
 
-import com.solvd.deliverycompany.model.BaseEntity;
-import com.solvd.deliverycompany.model.Order;
-
 public class Package extends BaseEntity {
     private Order order;
     private Warehouse warehouse;

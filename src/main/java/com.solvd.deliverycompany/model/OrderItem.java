@@ -1,14 +1,17 @@
 package com.solvd.deliverycompany.model;
 
-import com.solvd.deliverycompany.model.BaseEntity;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 
 public class OrderItem extends BaseEntity {
+
     private String itemName;
     private Integer quantity;
     private Double price;
 
-    public OrderItem() {
-    }
+    public OrderItem() {}
 
     public OrderItem(Long id, String itemName, Integer quantity, Double price) {
         super(id);
@@ -25,7 +28,7 @@ public class OrderItem extends BaseEntity {
         this.itemName = itemName;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
@@ -33,7 +36,7 @@ public class OrderItem extends BaseEntity {
         this.quantity = quantity;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 

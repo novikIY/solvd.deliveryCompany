@@ -1,8 +1,5 @@
 package com.solvd.deliverycompany.model;
 
-import com.solvd.deliverycompany.model.BaseEntity;
-import com.solvd.deliverycompany.model.Courier;
-
 public class CourierLocation extends BaseEntity {
     private Courier courier;
     private Double latitude;

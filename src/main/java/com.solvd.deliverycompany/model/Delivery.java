@@ -1,10 +1,5 @@
 package com.solvd.deliverycompany.model;
 
-import com.solvd.deliverycompany.model.BaseEntity;
-import com.solvd.deliverycompany.model.Courier;
-import com.solvd.deliverycompany.model.Order;
-import com.solvd.deliverycompany.model.ShipmentStatus;
-
 public class Delivery extends BaseEntity {
     private Order order;
     private Courier courier;

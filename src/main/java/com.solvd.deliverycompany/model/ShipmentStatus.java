@@ -1,7 +1,5 @@
 package com.solvd.deliverycompany.model;
 
-import com.solvd.deliverycompany.model.BaseEntity;
-
 public class ShipmentStatus extends BaseEntity {
     private String statusName;
     private String description;
