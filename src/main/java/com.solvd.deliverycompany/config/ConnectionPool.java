@@ -43,7 +43,8 @@ public class ConnectionPool {
             LOGGER.info("Connection requested from pool");
             return pool.take();
         } catch (InterruptedException e) {
-            throw new RuntimeException("Error getting connection from pool", e);
+            LOGGER.error("Error getting connection", e);
+            return null;
         }
     }
 
@@ -62,7 +63,8 @@ public class ConnectionPool {
         try {
             return DriverManager.getConnection(URL, USERNAME, PASSWORD);
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to create DB connection", e);
+            LOGGER.error("Failed to create DB connection", e);
+            return null;
         }
     }
 }
