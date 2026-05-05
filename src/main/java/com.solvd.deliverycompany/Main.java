@@ -1,5 +1,6 @@
 package com.solvd.deliverycompany;
 
+import com.solvd.deliverycompany.config.ConnectionPool;
 import com.solvd.deliverycompany.jackson.JacksonParser;
 import com.solvd.deliverycompany.jaxb.AddressWrapper;
 import com.solvd.deliverycompany.jaxb.DeliveryWrapper;
@@ -7,25 +8,62 @@ import com.solvd.deliverycompany.jaxb.JaxbParser;
 import com.solvd.deliverycompany.jaxb.JaxbWriter;
 import com.solvd.deliverycompany.jaxb.OrderWrapper;
 import com.solvd.deliverycompany.jaxb.UsersWrapper;
+import com.solvd.deliverycompany.mapper.AddressMapper;
+import com.solvd.deliverycompany.mapper.CourierMapper;
+import com.solvd.deliverycompany.mapper.CustomerMapper;
+import com.solvd.deliverycompany.mapper.OrderItemMapper;
+import com.solvd.deliverycompany.mapper.OrderMapper;
+import com.solvd.deliverycompany.model.Address;
+import com.solvd.deliverycompany.model.Courier;
+import com.solvd.deliverycompany.model.Customer;
+import com.solvd.deliverycompany.model.Delivery;
+import com.solvd.deliverycompany.model.Order;
+import com.solvd.deliverycompany.model.OrderItem;
+import com.solvd.deliverycompany.model.User;
 import com.solvd.deliverycompany.sax.AddressHandler;
 import com.solvd.deliverycompany.sax.DeliveryHandler;
 import com.solvd.deliverycompany.sax.OrderHandler;
 import com.solvd.deliverycompany.sax.SaxParser;
 import com.solvd.deliverycompany.sax.UsersHandler;
-import com.solvd.deliverycompany.model.Address;
-import com.solvd.deliverycompany.model.Delivery;
-import com.solvd.deliverycompany.model.Order;
-import com.solvd.deliverycompany.model.User;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 
 public class Main {
 
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+
+        try {
+            ConnectionPool pool = ConnectionPool.getInstance();
+
+            Connection connection = pool.getConnection();
+
+            try (Statement stmt = connection.createStatement();
+                 ResultSet rs = stmt.executeQuery("SELECT 1")) {
+
+                if (rs.next()) {
+                    LOGGER.info("Database connection SUCCESS: {}", rs.getInt(1));
+                }
+
+            } finally {
+                pool.releaseConnection(connection);
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Database connection FAILED", e);
+        }
+
 
         List<User> users =
                 SaxParser.parse("users.xml", new UsersHandler());
@@ -44,34 +82,31 @@ public class Main {
         LOGGER.info("Orders loaded: {}", orders.size());
         LOGGER.info("Deliveries loaded: {}", deliveries.size());
 
+
         UsersWrapper xmlWrapper =
                 JaxbParser.unmarshal("src/main/resources/users.xml", UsersWrapper.class);
 
         LOGGER.info("Users loaded via JAXB: {}", xmlWrapper.getUsers().size());
-
         JaxbWriter.marshal(xmlWrapper, "output-users.xml");
 
         AddressWrapper addressWrapper =
                 JaxbParser.unmarshal("src/main/resources/addresses.xml", AddressWrapper.class);
 
         LOGGER.info("Addresses loaded via JAXB: {}", addressWrapper.getAddresses().size());
-
         JaxbWriter.marshal(addressWrapper, "output-address.xml");
-
 
         OrderWrapper xmlOrderWrapper =
                 JaxbParser.unmarshal("src/main/resources/orders.xml", OrderWrapper.class);
 
         LOGGER.info("Orders loaded via JAXB: {}", xmlOrderWrapper.getOrders().size());
-
         JaxbWriter.marshal(xmlOrderWrapper, "output-orders.xml");
 
         DeliveryWrapper deliveryWrapper =
                 JaxbParser.unmarshal("src/main/resources/deliveries.xml", DeliveryWrapper.class);
 
         LOGGER.info("Deliveries loaded via JAXB: {}", deliveryWrapper.getDeliveries().size());
-
         JaxbWriter.marshal(deliveryWrapper, "output-deliveries.xml");
+
 
         UsersWrapper jsonUserWrapper =
                 JacksonParser.read("users.json", UsersWrapper.class);
@@ -86,5 +121,54 @@ public class Main {
         LOGGER.info("Orders loaded via Jackson: {}", jsonOrderWrapper.getOrders().size());
 
         JacksonParser.write(jsonOrderWrapper, "target/orders_out.json");
+
+        SqlSessionFactory factory =
+                new SqlSessionFactoryBuilder()
+                        .build(Resources.getResourceAsStream("mybatis-config.xml"));
+
+        try (SqlSession session = factory.openSession()) {
+
+            CustomerMapper mapper = session.getMapper(CustomerMapper.class);
+
+            List<Customer> customers = mapper.getAll();
+
+            LOGGER.info("MyBatis customers: {}", customers.size());
+        }
+
+        try (SqlSession session = factory.openSession()) {
+
+            CourierMapper courierMapper = session.getMapper(CourierMapper.class);
+
+            List<Courier> couriers = courierMapper.getAll();
+
+            LOGGER.info("MyBatis couriers: {}", couriers.size());
+        }
+
+        try (SqlSession session = factory.openSession()) {
+
+            OrderMapper orderMapper = session.getMapper(OrderMapper.class);
+
+            List<Order> order = orderMapper.getAll();
+
+            LOGGER.info("MyBatis orders: {}", order.size());
+        }
+
+        try (SqlSession session = factory.openSession()) {
+
+            OrderItemMapper orderItemMapper = session.getMapper(OrderItemMapper.class);
+
+            List<OrderItem> items = orderItemMapper.getAll();
+
+            LOGGER.info("MyBatis order items: {}", items.size());
+        }
+
+        try (SqlSession session = factory.openSession()) {
+
+            AddressMapper addressMapper = session.getMapper(AddressMapper.class);
+
+            List<Address> address = addressMapper.getAll();
+
+            LOGGER.info("MyBatis addresses: {}", address.size());
+        }
     }
 }

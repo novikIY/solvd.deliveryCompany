@@ -17,18 +17,25 @@ public class ConnectionPool {
 
     private static final Logger LOGGER = LogManager.getLogger(ConnectionPool.class);
 
-    private static final String URL = "jdbc:mysql://localhost:3306/delivery_db";
+    private static final String URL =
+            "jdbc:mysql://localhost:3306/delivery_db";
+
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "password";
+    private static final String PASSWORD = "";
 
     private ConnectionPool() {
         pool = new LinkedBlockingQueue<>(MAX_CONNECTIONS);
 
         for (int i = 0; i < MAX_CONNECTIONS; i++) {
-            pool.add(createConnection());
+            Connection conn = createConnection();
+            if (conn != null) {
+                pool.add(conn);
+            } else {
+                LOGGER.warn("Connection {} was not created", i);
+            }
         }
 
-        LOGGER.info("Connection pool initialized with {} connections", MAX_CONNECTIONS);
+        LOGGER.info("Connection pool initialized with {} connections", pool.size());
     }
 
     public static synchronized ConnectionPool getInstance() {
@@ -41,17 +48,37 @@ public class ConnectionPool {
     public Connection getConnection() {
         try {
             LOGGER.info("Connection requested from pool");
-            return pool.take();
+
+            Connection connection = pool.take();
+
+            if (connection == null || connection.isClosed()) {
+                LOGGER.warn("Connection was null or closed, creating new one");
+                return createConnection();
+            }
+
+            return connection;
+
         } catch (InterruptedException e) {
-            LOGGER.error("Error getting connection", e);
-            return null;
+            LOGGER.error("Error getting connection from pool", e);
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            LOGGER.error("Connection validation failed", e);
+            throw new RuntimeException(e);
         }
     }
 
     public void releaseConnection(Connection connection) {
         if (connection != null) {
-            pool.offer(connection);
-            LOGGER.info("Connection returned to pool");
+            try {
+                if (!connection.isClosed()) {
+                    pool.offer(connection);
+                    LOGGER.info("Connection returned to pool");
+                } else {
+                    LOGGER.warn("Tried to return closed connection");
+                }
+            } catch (SQLException e) {
+                LOGGER.error("Error checking connection state", e);
+            }
         }
     }
 

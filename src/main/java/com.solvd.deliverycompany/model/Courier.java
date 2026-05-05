@@ -18,6 +18,7 @@ public class Courier extends User {
 
     public Courier(Long id, String phone, String email,
                    String vehicleType, String status) {
+        super(id);
         this.phone = phone;
         this.email = email;
         this.vehicleType = vehicleType;

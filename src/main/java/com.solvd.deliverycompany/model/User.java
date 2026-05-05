@@ -28,6 +28,10 @@ public class User extends BaseEntity {
     public User() {
     }
 
+    public User(Long id) {
+        super(id);
+    }
+
     public User(Long id, String firstName, String lastName, String role, String createdAt) {
         super(id);
         this.firstName = firstName;
@@ -35,7 +39,6 @@ public class User extends BaseEntity {
         this.role = role;
         this.createdAt = createdAt;
     }
-
     public String getFirstName() {
         return firstName;
     }

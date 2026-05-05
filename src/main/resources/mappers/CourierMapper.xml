@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.solvd.deliverycompany.mapper.CourierMapper">
+
+    <resultMap id="CourierResultMap" type="com.solvd.deliverycompany.model.Courier">
+        <id column="courier_id" property="id"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="vehicle_type" property="vehicleType"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <select id="getAll" resultMap="CourierResultMap">
+        SELECT courier_id, phone, email, vehicle_type, status
+        FROM couriers
+    </select>
+
+    <select id="getById" parameterType="long" resultMap="CourierResultMap">
+        SELECT courier_id, phone, email, vehicle_type, status
+        FROM couriers
+        WHERE courier_id = #{id}
+    </select>
+
+    <insert id="insert"
+            parameterType="com.solvd.deliverycompany.model.Courier"
+            useGeneratedKeys="true"
+            keyProperty="id">
+
+        INSERT INTO couriers (
+        phone,
+        email,
+        vehicle_type,
+        status
+        )
+        VALUES (
+        #{phone},
+        #{email},
+        #{vehicleType},
+        #{status}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.solvd.deliverycompany.model.Courier">
+        UPDATE couriers
+        SET
+        phone = #{phone},
+        email = #{email},
+        vehicle_type = #{vehicleType},
+        status = #{status}
+        WHERE courier_id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM couriers WHERE courier_id = #{id}
+    </delete>
+
+    <select id="getAvailableCouriers" resultMap="CourierResultMap">
+        SELECT courier_id, phone, email, vehicle_type, status
+        FROM couriers
+        WHERE status = 'AVAILABLE'
+    </select>
+
+</mapper>

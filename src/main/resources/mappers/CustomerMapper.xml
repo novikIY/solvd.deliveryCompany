@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.solvd.deliverycompany.mapper.CustomerMapper">
+
+    <resultMap id="CustomerResultMap" type="com.solvd.deliverycompany.model.Customer">
+        <id column="customer_id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="created_at" property="createdAt"/>
+
+    </resultMap>
+
+    <select id="getAll" resultMap="CustomerResultMap">
+        SELECT customer_id, name, email, phone, created_at
+        FROM customers
+    </select>
+
+    <select id="getById" parameterType="long" resultMap="CustomerResultMap">
+        SELECT customer_id, name, email, phone, created_at
+        FROM customers
+        WHERE customer_id = #{id}
+    </select>
+
+    <select id="getByEmail" parameterType="string" resultMap="CustomerResultMap">
+        SELECT customer_id, name, email, phone, created_at
+        FROM customers
+        WHERE email = #{email}
+    </select>
+
+    <insert id="insert"
+            parameterType="com.solvd.deliverycompany.model.Customer"
+            useGeneratedKeys="true"
+            keyProperty="id">
+
+        INSERT INTO customers (
+        name,
+        email,
+        phone,
+        created_at
+        )
+        VALUES (
+        #{name},
+        #{email},
+        #{phone},
+        #{createdAt}
+        )
+
+    </insert>
+
+    <update id="update"
+            parameterType="com.solvd.deliverycompany.model.Customer">
+
+        UPDATE customers
+        SET
+        name = #{name},
+        email = #{email},
+        phone = #{phone},
+        created_at = #{createdAt}
+        WHERE customer_id = #{id}
+
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM customers WHERE customer_id = #{id}
+    </delete>
+
+</mapper>

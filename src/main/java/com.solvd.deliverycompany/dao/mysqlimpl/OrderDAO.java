@@ -20,18 +20,17 @@ public class OrderDAO extends AbstractMySQLDAO implements IOrderDAO {
 
     @Override
     public void create(Order order) {
-        String sql = "INSERT INTO Orders (customer_id, courier_id, status_id, created_at) " +
-                "VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Orders (customer_id, address_id, status, created_at, total_amount) " +
+                "VALUES (?, ?, ?, ?, ?)";
 
         Connection connection = getConnection();
 
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
-
             stm.setLong(1, order.getCustomerId());
-            stm.setString(2, order.getStatus());
-            stm.setString(3, order.getOrderDate());
-            stm.setDouble(4, order.getTotalAmount());
-
+            stm.setLong(2, order.getAddressId());
+            stm.setString(3, order.getStatus());
+            stm.setString(4, order.getOrderDate());
+            stm.setDouble(5, order.getTotalAmount());
             stm.executeUpdate();
 
         } catch (SQLException e) {

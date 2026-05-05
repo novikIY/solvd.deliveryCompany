@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.solvd.deliverycompany.mapper.AddressMapper">
+
+    <resultMap id="AddressResultMap" type="com.solvd.deliverycompany.model.Address">
+        <id column="address_id" property="id"/>
+        <result column="street" property="street"/>
+        <result column="city" property="city"/>
+        <result column="postal_code" property="postalCode"/>
+        <result column="country" property="country"/>
+
+        <association property="customer" javaType="com.solvd.deliverycompany.model.Customer">
+            <id column="customer_id" property="id"/>
+        </association>
+
+    </resultMap>
+
+    <select id="getAll" resultMap="AddressResultMap">
+
+        SELECT address_id, customer_id, street, city, postal_code, country
+        FROM Addresses
+
+    </select>
+
+    <select id="getById" parameterType="long" resultMap="AddressResultMap">
+
+        SELECT address_id, customer_id, street, city, postal_code, country
+        FROM Addresses
+        WHERE address_id = #{id}
+
+    </select>
+
+    <insert id="insert"
+            parameterType="com.solvd.deliverycompany.model.Address"
+            useGeneratedKeys="true"
+            keyProperty="id">
+
+        INSERT INTO Addresses (
+        customer_id,
+        street,
+        city,
+        postal_code,
+        country
+        )
+        VALUES (
+        #{customer.id},
+        #{street},
+        #{city},
+        #{postalCode},
+        #{country}
+        )
+
+    </insert>
+
+    <update id="update"
+            parameterType="com.solvd.deliverycompany.model.Address">
+
+        UPDATE Addresses
+        SET
+        customer_id = #{customer.id},
+        street = #{street},
+        city = #{city},
+        postal_code = #{postalCode},
+        country = #{country}
+        WHERE address_id = #{id}
+
+    </update>
+
+    <delete id="delete" parameterType="long">
+
+        DELETE FROM Addresses
+        WHERE address_id = #{id}
+
+    </delete>
+
+
+    <select id="getByCustomerId" parameterType="long" resultMap="AddressResultMap">
+
+        SELECT address_id, customer_id, street, city, postal_code, country
+        FROM Addresses
+        WHERE customer_id = #{value}
+
+    </select>
+
+    <select id="getByCity" parameterType="string" resultMap="AddressResultMap">
+
+        SELECT address_id, customer_id, street, city, postal_code, country
+        FROM Addresses
+        WHERE city = #{value}
+
+    </select>
+
+    <select id="getByPostalCode" parameterType="string" resultMap="AddressResultMap">
+
+        SELECT address_id, customer_id, street, city, postal_code, country
+        FROM Addresses
+        WHERE postal_code = #{value}
+
+    </select>
+
+</mapper>
