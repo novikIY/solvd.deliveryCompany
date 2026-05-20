@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.solvd.deliverycompany.mapper.AddressMapper">
+<mapper namespace="com.solvd.deliverycompany.dao.IAddressDAO">
 
     <resultMap id="AddressResultMap" type="com.solvd.deliverycompany.model.Address">
         <id column="address_id" property="id"/>

@@ -1,6 +1,11 @@
 package com.solvd.deliverycompany;
 
 import com.solvd.deliverycompany.config.ConnectionPool;
+import com.solvd.deliverycompany.dao.IAddressDAO;
+import com.solvd.deliverycompany.dao.ICourierDAO;
+import com.solvd.deliverycompany.dao.ICustomerDAO;
+import com.solvd.deliverycompany.dao.IOrderDAO;
+import com.solvd.deliverycompany.dao.IOrderItemDAO;
 import com.solvd.deliverycompany.jackson.JacksonParser;
 import com.solvd.deliverycompany.jaxb.AddressWrapper;
 import com.solvd.deliverycompany.jaxb.DeliveryWrapper;
@@ -8,11 +13,6 @@ import com.solvd.deliverycompany.jaxb.JaxbParser;
 import com.solvd.deliverycompany.jaxb.JaxbWriter;
 import com.solvd.deliverycompany.jaxb.OrderWrapper;
 import com.solvd.deliverycompany.jaxb.UsersWrapper;
-import com.solvd.deliverycompany.mapper.AddressMapper;
-import com.solvd.deliverycompany.mapper.CourierMapper;
-import com.solvd.deliverycompany.mapper.CustomerMapper;
-import com.solvd.deliverycompany.mapper.OrderItemMapper;
-import com.solvd.deliverycompany.mapper.OrderMapper;
 import com.solvd.deliverycompany.model.Address;
 import com.solvd.deliverycompany.model.Courier;
 import com.solvd.deliverycompany.model.Customer;
@@ -128,45 +128,45 @@ public class Main {
 
         try (SqlSession session = factory.openSession()) {
 
-            CustomerMapper mapper = session.getMapper(CustomerMapper.class);
+            ICustomerDAO customerDAO = session.getMapper(ICustomerDAO.class);
 
-            List<Customer> customers = mapper.getAll();
+            List<Customer> customers = customerDAO.getAll();
 
             LOGGER.info("MyBatis customers: {}", customers.size());
         }
 
         try (SqlSession session = factory.openSession()) {
 
-            CourierMapper courierMapper = session.getMapper(CourierMapper.class);
+            ICourierDAO courierDAO = session.getMapper(ICourierDAO.class);
 
-            List<Courier> couriers = courierMapper.getAll();
+            List<Courier> couriers = courierDAO.getAll();
 
             LOGGER.info("MyBatis couriers: {}", couriers.size());
         }
 
         try (SqlSession session = factory.openSession()) {
 
-            OrderMapper orderMapper = session.getMapper(OrderMapper.class);
+            IOrderDAO orderDAO = session.getMapper(IOrderDAO.class);
 
-            List<Order> order = orderMapper.getAll();
+            List<Order> order = orderDAO.getAll();
 
             LOGGER.info("MyBatis orders: {}", order.size());
         }
 
         try (SqlSession session = factory.openSession()) {
 
-            OrderItemMapper orderItemMapper = session.getMapper(OrderItemMapper.class);
+            IOrderItemDAO orderItemDAO = session.getMapper(IOrderItemDAO.class);
 
-            List<OrderItem> items = orderItemMapper.getAll();
+            List<OrderItem> items = orderItemDAO.getAll();
 
             LOGGER.info("MyBatis order items: {}", items.size());
         }
 
         try (SqlSession session = factory.openSession()) {
 
-            AddressMapper addressMapper = session.getMapper(AddressMapper.class);
+            IAddressDAO addressDAO = session.getMapper(IAddressDAO.class);
 
-            List<Address> address = addressMapper.getAll();
+            List<Address> address = addressDAO.getAll();
 
             LOGGER.info("MyBatis addresses: {}", address.size());
         }
